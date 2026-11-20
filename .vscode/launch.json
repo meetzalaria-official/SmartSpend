@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "SmartSpend: Run server",
+      "request": "launch",
+      "mainClass": "com.smartspend.server.PreviewServer",
+      "projectName": "smartSpend",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    }
+  ]
+}

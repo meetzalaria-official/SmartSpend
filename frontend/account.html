@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f5fb">
+  <meta name="description" content="Your SmartSpend account workspace: profile, security, finance screens and project progress.">
+  <title>Overview · SmartSpend</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("smartspend.theme.v1");
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+      } catch (error) {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="app-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <a class="sidebar__brand" href="account.html">
+        <span class="brand__mark">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H19v14H6.5A2.5 2.5 0 0 1 4 16.5v-9Z" fill="currentColor" opacity=".25"/>
+            <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H19v14H6.5A2.5 2.5 0 0 1 4 16.5v-9Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M4 9h15M15.5 13.5h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span>
+          SmartSpend
+          <small>Account workspace</small>
+        </span>
+      </a>
+
+      <nav class="sidebar__nav">
+        <a class="nav-item is-active" href="#overview" data-nav="overview">
+          <svg class="icon" aria-hidden="true"><use href="#i-grid"></use></svg>
+          Overview
+        </a>
+        <a class="nav-item" href="#profile" data-nav="profile">
+          <svg class="icon" aria-hidden="true"><use href="#i-user"></use></svg>
+          Profile
+        </a>
+        <a class="nav-item" href="#security" data-nav="security">
+          <svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg>
+          Security
+        </a>
+
+        <p class="nav-label">Money</p>
+        <a class="nav-item" href="dashboard.html" data-nav="dashboard">
+          <svg class="icon" aria-hidden="true"><use href="#i-grid"></use></svg>
+          Dashboard
+        </a>
+        <a class="nav-item" href="transactions.html" data-nav="transactions">
+          <svg class="icon" aria-hidden="true"><use href="#i-wallet"></use></svg>
+          Transactions
+        </a>
+        <a class="nav-item" href="budgets.html" data-nav="budgets">
+          <svg class="icon" aria-hidden="true"><use href="#i-target"></use></svg>
+          Budgets
+        </a>
+        <a class="nav-item" href="goals.html" data-nav="goals">
+          <svg class="icon" aria-hidden="true"><use href="#i-piggy-bank"></use></svg>
+          Savings goals
+        </a>
+        <a class="nav-item" href="reports.html" data-nav="reports">
+          <svg class="icon" aria-hidden="true"><use href="#i-pie"></use></svg>
+          Reports
+        </a>
+
+        <p class="nav-label">Workspace</p>
+        <a class="nav-item" href="settings.html" data-nav="settings">
+          <svg class="icon" aria-hidden="true"><use href="#i-settings"></use></svg>
+          Settings
+        </a>
+      </nav>
+
+      <div class="sidebar__spacer"></div>
+
+      <div class="sidebar__help">
+        <strong>Backend live</strong>
+        <p>Every screen reads and writes your own SQLite-backed workspace through the Java REST API.</p>
+        <span class="chip chip--success">Phases 1–8 complete</span>
+      </div>
+
+      <div class="sidebar__profile">
+        <span class="avatar avatar--sm" data-user-initials>SS</span>
+        <div class="sidebar__profile-copy">
+          <strong data-user-field="fullName">SmartSpend user</strong>
+          <span data-user-field="email">you@example.com</span>
+        </div>
+        <button class="sidebar__logout" type="button" data-logout aria-label="Sign out" title="Sign out">
+          <svg class="icon" aria-hidden="true"><use href="#i-logout"></use></svg>
+        </button>
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="app-main">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="btn btn--icon sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false">
+            <svg class="icon icon--lg" aria-hidden="true"><use href="#i-menu"></use></svg>
+          </button>
+          <div class="topbar__title">
+            <strong>Overview</strong>
+            <span>Profile, security and your full finance workspace</span>
+          </div>
+        </div>
+
+        <div class="topbar__actions">
+          <button class="btn btn--primary btn--sm topbar__add" type="button" data-account-quick-add>
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus"></use></svg>
+            <span>Add transaction</span>
+          </button>
+
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+            <svg class="icon icon-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
+            <svg class="icon icon-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+          </button>
+
+          <div class="popover" id="notifications-popover">
+            <button class="btn btn--icon notif-trigger" type="button" data-popover-trigger aria-expanded="false" aria-label="Notifications" title="Notifications">
+              <svg class="icon icon--lg" aria-hidden="true"><use href="#i-bell"></use></svg>
+              <span class="notif-dot" id="notif-dot" hidden></span>
+            </button>
+            <div class="popover__panel popover__panel--notifications" role="dialog" aria-label="Notifications">
+              <div class="popover__head popover__head--row">
+                <div>
+                  <strong>Notifications</strong>
+                  <span id="notif-summary">Budget and savings alerts</span>
+                </div>
+                <button class="link-button" type="button" id="notif-mark-all">Mark all read</button>
+              </div>
+              <div class="notif-list" id="notif-list"></div>
+            </div>
+          </div>
+
+          <div class="popover" id="user-popover">
+            <button class="user-trigger" type="button" data-popover-trigger aria-expanded="false">
+              <span class="avatar avatar--sm" data-user-initials>SS</span>
+              <span class="visually-hidden">Account menu</span>
+              <svg class="icon" aria-hidden="true"><use href="#i-chevron-down"></use></svg>
+            </button>
+            <div class="popover__panel" role="menu" aria-label="Account menu">
+              <div class="popover__user">
+                <span class="avatar" data-user-initials>SS</span>
+                <div class="popover__user-copy">
+                  <strong data-user-field="fullName">SmartSpend user</strong>
+                  <span data-user-field="email">you@example.com</span>
+                </div>
+              </div>
+              <div class="popover__divider"></div>
+              <a class="popover__item" href="#profile" role="menuitem" data-close-popover>
+                <svg class="icon" aria-hidden="true"><use href="#i-user"></use></svg>
+                My profile
+              </a>
+              <a class="popover__item" href="#security" role="menuitem" data-close-popover>
+                <svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg>
+                Security settings
+              </a>
+              <div class="popover__divider"></div>
+              <button class="popover__item popover__item--danger" type="button" role="menuitem" data-logout>
+                <svg class="icon" aria-hidden="true"><use href="#i-logout"></use></svg>
+                Sign out
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="content" id="main-content">
+        <section class="hero" id="overview" aria-labelledby="hero-title">
+          <div class="hero__copy">
+            <span class="hero__eyebrow"><span class="status-dot"></span> Account ready · UI complete</span>
+            <h1 id="hero-title"><span data-greeting>Good morning</span>, <span data-user-first>there</span>.</h1>
+            <p>Your SmartSpend account is set up and protected. The dashboard, ledger, budgets, goals and reports are all ready to use from the sidebar.</p>
+          </div>
+          <div class="hero__meta">
+            <span class="hero__date">
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-calendar"></use></svg>
+              <span data-today>Today</span>
+            </span>
+            <span class="hero__badge">
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-check-circle"></use></svg>
+              Signed in securely
+            </span>
+          </div>
+        </section>
+
+        <section class="stat-grid" aria-label="Account summary">
+          <article class="stat-card">
+            <div class="stat-card__top">
+              <span class="stat-card__icon stat-card__icon--primary">
+                <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
+              </span>
+              <span class="chip chip--primary">Member</span>
+            </div>
+            <span class="stat-card__label">Member since</span>
+            <strong class="stat-card__value stat-card__value--sm" data-user-field="memberSince">—</strong>
+            <span class="stat-card__hint">Your SmartSpend journey started here.</span>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-card__top">
+              <span class="stat-card__icon stat-card__icon--info">
+                <svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg>
+              </span>
+              <span class="chip">Session</span>
+            </div>
+            <span class="stat-card__label">Last sign-in</span>
+            <strong class="stat-card__value stat-card__value--sm" data-user-field="lastLogin">—</strong>
+            <span class="stat-card__hint">This device, just now.</span>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-card__top">
+              <span class="stat-card__icon stat-card__icon--success">
+                <svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg>
+              </span>
+              <span class="chip chip--success">Active</span>
+            </div>
+            <span class="stat-card__label">Account status</span>
+            <strong class="stat-card__value">Protected</strong>
+            <span class="stat-card__hint">Salted PBKDF2 password hashing.</span>
+          </article>
+
+          <article class="stat-card">
+            <div class="stat-card__top">
+              <span class="stat-card__icon stat-card__icon--warning">
+                <svg class="icon" aria-hidden="true"><use href="#i-globe"></use></svg>
+              </span>
+              <span class="chip">India</span>
+            </div>
+            <span class="stat-card__label">Preferred currency</span>
+            <strong class="stat-card__value">INR · ₹</strong>
+            <span class="stat-card__hint">Change it in Settings → Preferences.</span>
+          </article>
+        </section>
+
+        <div class="content-grid">
+          <section class="card" id="profile" aria-labelledby="profile-title">
+            <div class="card__head">
+              <div class="card__title">
+                <h2 id="profile-title">Your profile</h2>
+                <p>The identity attached to this workspace.</p>
+              </div>
+              <button class="btn btn--ghost btn--sm" type="button" id="edit-profile-button">
+                <svg class="icon icon--sm" aria-hidden="true"><use href="#i-edit"></use></svg>
+                Edit profile
+              </button>
+            </div>
+            <div class="card__body">
+              <div class="profile-head">
+                <span class="avatar avatar--lg" data-user-initials>SS</span>
+                <div class="profile-head__copy">
+                  <h3 data-user-field="fullName">SmartSpend user</h3>
+                  <p>
+                    <svg class="icon icon--sm" aria-hidden="true"><use href="#i-users"></use></svg>
+                    <span data-user-field="username">@username</span>
+                  </p>
+                  <span class="chip chip--success">
+                    <svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"></use></svg>
+                    Verified locally
+                  </span>
+                </div>
+              </div>
+
+              <div class="detail-list">
+                <div class="detail-row">
+                  <span class="detail-row__label">
+                    <svg class="icon" aria-hidden="true"><use href="#i-mail"></use></svg>
+                    Email
+                  </span>
+                  <span class="detail-row__value" data-user-field="email">you@example.com</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-row__label">
+                    <svg class="icon" aria-hidden="true"><use href="#i-user"></use></svg>
+                    Username
+                  </span>
+                  <span class="detail-row__value" data-user-field="username">@username</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-row__label">
+                    <svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg>
+                    Account ID
+                  </span>
+                  <span class="detail-row__value detail-row__value--mono">
+                    <span data-user-field="accountId">—</span>
+                    <button class="copy-button" type="button" data-copy-account-id aria-label="Copy account ID" title="Copy account ID">
+                      <svg class="icon" aria-hidden="true"><use href="#i-copy"></use></svg>
+                    </button>
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-row__label">
+                    <svg class="icon" aria-hidden="true"><use href="#i-calendar"></use></svg>
+                    Member since
+                  </span>
+                  <span class="detail-row__value" data-user-field="memberSince">—</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-row__label">
+                    <svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg>
+                    Last sign-in
+                  </span>
+                  <span class="detail-row__value" data-user-field="lastLogin">—</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card" id="security" aria-labelledby="security-title">
+            <div class="card__head">
+              <div class="card__title">
+                <h2 id="security-title">Security</h2>
+                <p>Password and session protection.</p>
+              </div>
+              <span class="chip chip--success">Healthy</span>
+            </div>
+            <div class="card__body">
+              <div class="security-list">
+                <div class="security-item">
+                  <span class="security-item__icon">
+                    <svg class="icon" aria-hidden="true"><use href="#i-lock"></use></svg>
+                  </span>
+                  <div class="security-item__copy">
+                    <strong>Password protection</strong>
+                    <span>PBKDF2-SHA256 · 210,000 iterations</span>
+                  </div>
+                  <span class="chip chip--success">Strong</span>
+                </div>
+
+                <div class="security-item">
+                  <span class="security-item__icon">
+                    <svg class="icon" aria-hidden="true"><use href="#i-key"></use></svg>
+                  </span>
+                  <div class="security-item__copy">
+                    <strong>Password last changed</strong>
+                    <span data-user-field="passwordChanged">—</span>
+                  </div>
+                </div>
+
+                <div class="security-item">
+                  <span class="security-item__icon">
+                    <svg class="icon" aria-hidden="true"><use href="#i-clock"></use></svg>
+                  </span>
+                  <div class="security-item__copy">
+                    <strong>Signed in today</strong>
+                    <span data-session-signed-in>—</span>
+                  </div>
+                  <span class="chip chip--primary">This device</span>
+                </div>
+
+                <div class="security-item">
+                  <span class="security-item__icon">
+                    <svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg>
+                  </span>
+                  <div class="security-item__copy">
+                    <strong>Session</strong>
+                    <span data-session-mode>—</span>
+                  </div>
+                  <span class="chip" data-session-expires>—</span>
+                </div>
+              </div>
+
+              <div class="security-actions">
+                <button class="btn btn--ghost btn--full" type="button" id="change-password-button">
+                  <svg class="icon icon--sm" aria-hidden="true"><use href="#i-key"></use></svg>
+                  Change password
+                </button>
+                <button class="btn btn--danger-ghost btn--full" type="button" data-logout>
+                  <svg class="icon icon--sm" aria-hidden="true"><use href="#i-logout"></use></svg>
+                  Sign out of this device
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="card phase-card" aria-labelledby="phase-title">
+          <div class="card__head">
+            <div class="card__title">
+              <h2 id="phase-title">Project progress</h2>
+              <p>The complete stack is implemented: responsive UI, Java REST API and SQLite storage.</p>
+            </div>
+            <span class="chip chip--success">Phases 1–8 complete</span>
+          </div>
+          <div class="card__body">
+            <div class="phase-progress">
+              <div class="phase-progress__track">
+                <div class="phase-progress__fill" style="width:100%"></div>
+              </div>
+              <span>100% complete · frontend, backend and database</span>
+            </div>
+            <ul class="phase-list">
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Registration, PBKDF2 hashing, HttpOnly sessions and account security</li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Dashboard with cash flow, budgets, goals and recent activity</li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Transaction ledger with search, filters, bulk actions and CSV export</li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Monthly budgets with category limits, warnings and copy-forward</li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Savings goals with contributions and progress history</li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Reports with charts, category mix, merchants and insights</li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Settings for currency, dates, notifications, categories and backups</li>
+              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Java REST API, SQLite schema, DAO/service layers and session security</li>
+            </ul>
+            <div class="phase-note">
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-info"></use></svg>
+              <span>The browser and API share one origin. Auth and finance calls are user-scoped, and the SQLite database lives at <b>backend/data/smartspend.db</b>.</span>
+            </div>
+          </div>
+        </section>
+
+        <footer class="app-footer">
+          <span>
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-shield"></use></svg>
+            Full stack complete · vanilla JS, Java 17 and SQLite
+          </span>
+          <span>© 2026 SmartSpend</span>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="modal" id="profile-dialog" aria-labelledby="profile-dialog-title">
+    <div class="modal__card">
+      <div class="modal__head">
+        <span class="modal__icon">
+          <svg class="icon icon--lg" aria-hidden="true"><use href="#i-user"></use></svg>
+        </span>
+        <div class="modal__head-text">
+          <h2 id="profile-dialog-title">Edit profile</h2>
+          <p>Update the name and email attached to your account.</p>
+        </div>
+        <button class="btn btn--icon" type="button" data-close-dialog aria-label="Close dialog">
+          <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+        </button>
+      </div>
+
+      <div class="alert" id="profile-alert" role="alert" hidden></div>
+
+      <form id="profile-form" novalidate>
+        <div class="field">
+          <label for="profile-name">Full name</label>
+          <div class="input-wrap">
+            <svg class="input-icon" aria-hidden="true"><use href="#i-user"></use></svg>
+            <input id="profile-name" name="fullName" type="text" autocomplete="name" aria-describedby="profile-name-error" required>
+          </div>
+          <p class="field-error" id="profile-name-error" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="profile-email">Email address</label>
+          <div class="input-wrap">
+            <svg class="input-icon" aria-hidden="true"><use href="#i-mail"></use></svg>
+            <input id="profile-email" name="email" type="email" autocomplete="email" inputmode="email" aria-describedby="profile-email-error" required>
+          </div>
+          <p class="field-error" id="profile-email-error" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="profile-username">Username</label>
+          <div class="input-wrap input-wrap--readonly">
+            <svg class="input-icon" aria-hidden="true"><use href="#i-users"></use></svg>
+            <input id="profile-username" name="username" type="text" readonly aria-describedby="profile-username-hint">
+          </div>
+          <p class="field-hint" id="profile-username-hint">Usernames are fixed after registration.</p>
+        </div>
+
+        <div class="modal__actions">
+          <button class="btn btn--ghost" type="button" data-close-dialog>Cancel</button>
+          <button class="btn btn--primary" type="submit" id="profile-save">
+            <span class="btn__label">Save changes</span>
+            <span class="btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="password-dialog" aria-labelledby="password-dialog-title">
+    <div class="modal__card">
+      <div class="modal__head">
+        <span class="modal__icon">
+          <svg class="icon icon--lg" aria-hidden="true"><use href="#i-key"></use></svg>
+        </span>
+        <div class="modal__head-text">
+          <h2 id="password-dialog-title">Change password</h2>
+          <p>Choose a new password for your SmartSpend account.</p>
+        </div>
+        <button class="btn btn--icon" type="button" data-close-dialog aria-label="Close dialog">
+          <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+        </button>
+      </div>
+
+      <div class="alert" id="password-alert" role="alert" hidden></div>
+
+      <form id="password-form" novalidate>
+        <div class="field">
+          <label for="current-password">Current password</label>
+          <div class="input-wrap input-wrap--password">
+            <svg class="input-icon" aria-hidden="true"><use href="#i-lock"></use></svg>
+            <input id="current-password" name="currentPassword" type="password" autocomplete="current-password" placeholder="Enter current password" aria-describedby="current-password-error" required>
+            <button class="password-toggle" type="button" data-toggle-password="current-password" aria-label="Show password" aria-pressed="false" title="Show password">
+              <svg class="icon icon-eye" aria-hidden="true"><use href="#i-eye"></use></svg>
+              <svg class="icon icon-eye-off" aria-hidden="true"><use href="#i-eye-off"></use></svg>
+            </button>
+          </div>
+          <p class="field-error" id="current-password-error" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="new-password">New password</label>
+          <div class="input-wrap input-wrap--password">
+            <svg class="input-icon" aria-hidden="true"><use href="#i-lock"></use></svg>
+            <input id="new-password" name="newPassword" type="password" autocomplete="new-password" placeholder="Create a new password" aria-describedby="password-strength password-requirements new-password-error" required>
+            <button class="password-toggle" type="button" data-toggle-password="new-password" aria-label="Show password" aria-pressed="false" title="Show password">
+              <svg class="icon icon-eye" aria-hidden="true"><use href="#i-eye"></use></svg>
+              <svg class="icon icon-eye-off" aria-hidden="true"><use href="#i-eye-off"></use></svg>
+            </button>
+          </div>
+
+          <div class="strength" id="password-strength" data-score="0" aria-live="polite">
+            <div class="strength__top">
+              <span class="strength__label">Strength</span>
+              <span data-strength-label>Enter a password</span>
+            </div>
+            <div class="strength__bars" aria-hidden="true">
+              <span class="strength__bar"></span>
+              <span class="strength__bar"></span>
+              <span class="strength__bar"></span>
+              <span class="strength__bar"></span>
+            </div>
+            <span class="field-hint" data-strength-hint>Use 8+ characters with a letter and a number.</span>
+          </div>
+
+          <ul class="requirements" id="password-requirements">
+            <li data-req="length">
+              <span class="req-dot"><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg></span>
+              At least 8 characters
+            </li>
+            <li data-req="letter">
+              <span class="req-dot"><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg></span>
+              At least one letter
+            </li>
+            <li data-req="number">
+              <span class="req-dot"><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg></span>
+              At least one number
+            </li>
+          </ul>
+          <p class="field-error" id="new-password-error" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="confirm-password">Confirm new password</label>
+          <div class="input-wrap input-wrap--password">
+            <svg class="input-icon" aria-hidden="true"><use href="#i-lock"></use></svg>
+            <input id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Repeat new password" aria-describedby="confirm-password-error" required>
+            <button class="password-toggle" type="button" data-toggle-password="confirm-password" aria-label="Show password" aria-pressed="false" title="Show password">
+              <svg class="icon icon-eye" aria-hidden="true"><use href="#i-eye"></use></svg>
+              <svg class="icon icon-eye-off" aria-hidden="true"><use href="#i-eye-off"></use></svg>
+            </button>
+          </div>
+          <p class="field-error" id="confirm-password-error" role="alert"></p>
+        </div>
+
+        <div class="modal__note">
+          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-shield"></use></svg>
+          <span>Your new password is protected with a fresh random salt and PBKDF2 hashing. You will stay signed in on this device.</span>
+        </div>
+
+        <div class="modal__actions">
+          <button class="btn btn--ghost" type="button" data-close-dialog>Cancel</button>
+          <button class="btn btn--primary" type="submit" id="password-save">
+            <span class="btn__label">Update password</span>
+            <span class="btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/crypto.js"></script>
+  <script src="js/validators.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/money.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/dsa.js"></script>
+  <script src="js/finance.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/tx-dialog.js"></script>
+  <script src="js/account.js"></script>
+</body>
+</html>

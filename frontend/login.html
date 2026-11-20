@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f5fb">
+  <meta name="description" content="Sign in to SmartSpend, a private personal finance workspace for tracking income, expenses, budgets and savings.">
+  <title>Sign in · SmartSpend</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("smartspend.theme.v1");
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+      } catch (error) {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="auth-page">
+  <a class="skip-link" href="#login-form">Skip to sign-in form</a>
+
+  <div class="auth-shell">
+    <aside class="brand-panel">
+      <a class="brand" href="login.html" aria-label="SmartSpend home">
+        <span class="brand__mark">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H19v14H6.5A2.5 2.5 0 0 1 4 16.5v-9Z" fill="currentColor" opacity=".22"/>
+            <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H19v14H6.5A2.5 2.5 0 0 1 4 16.5v-9Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+            <path d="M4 9h15M15.5 13.5h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand__name">
+          SmartSpend
+          <small>Personal finance</small>
+        </span>
+      </a>
+
+      <div class="brand-copy">
+        <span class="eyebrow"><span class="eyebrow__dot"></span> Personal finance, simplified</span>
+        <h1>Every rupee,<br><span class="gradient-text">clearly accounted for.</span></h1>
+        <p>Track spending, plan budgets and grow your savings in one calm, private workspace built for everyday life in India.</p>
+      </div>
+
+      <ul class="feature-list">
+        <li>
+          <span class="feature-list__icon">
+            <svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg>
+          </span>
+          <div>
+            <strong>Private by design</strong>
+            <span>Your account data stays on your own device.</span>
+          </div>
+        </li>
+        <li>
+          <span class="feature-list__icon">
+            <svg class="icon" aria-hidden="true"><use href="#i-chart"></use></svg>
+          </span>
+          <div>
+            <strong>Clarity over clutter</strong>
+            <span>See where money goes with simple, useful summaries.</span>
+          </div>
+        </li>
+        <li>
+          <span class="feature-list__icon">
+            <svg class="icon" aria-hidden="true"><use href="#i-target"></use></svg>
+          </span>
+          <div>
+            <strong>Goals that stay visible</strong>
+            <span>Track budgets and savings progress without spreadsheets.</span>
+          </div>
+        </li>
+      </ul>
+
+      <div class="brand-visual" aria-hidden="true">
+        <div class="preview-card preview-card--balance">
+          <div class="preview-card__top">
+            <span>Available balance</span>
+            <span class="chip chip--success">+12.4%</span>
+          </div>
+          <span class="preview-card__amount">₹24,850<small>.00</small></span>
+          <svg class="sparkline" viewBox="0 0 260 46" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="spark-fill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#a5b4fc" stop-opacity=".45"/>
+                <stop offset="100%" stop-color="#a5b4fc" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 34 C18 34 24 22 40 24 S66 36 82 30 S108 12 124 16 S150 30 166 24 S190 8 208 12 S238 22 260 6 L260 46 L0 46 Z" fill="url(#spark-fill)"/>
+            <path d="M0 34 C18 34 24 22 40 24 S66 36 82 30 S108 12 124 16 S150 30 166 24 S190 8 208 12 S238 22 260 6" fill="none" stroke="#c7d2fe" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <div class="preview-card__foot">
+            <span>Income <b>₹42,000</b></span>
+            <span>Expenses <b>₹17,150</b></span>
+          </div>
+        </div>
+
+        <div class="preview-card preview-card--budget">
+          <div class="ring" style="--value: 68"><span>68%</span></div>
+          <div class="budget-copy">
+            <span>Monthly budget</span>
+            <strong>₹8,160 left</strong>
+            <small>On track this month</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="brand-foot">
+        <div class="avatar-stack" aria-hidden="true">
+          <span>AS</span><span>RK</span><span>MP</span>
+        </div>
+        <p>Built for the SmartSpend college project · Phase 8</p>
+      </div>
+    </aside>
+
+    <main class="auth-main">
+      <div class="auth-topbar">
+        <a class="mobile-brand" href="login.html" aria-label="SmartSpend home">
+          <span class="brand__mark">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H19v14H6.5A2.5 2.5 0 0 1 4 16.5v-9Z" fill="currentColor" opacity=".25"/>
+              <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H19v14H6.5A2.5 2.5 0 0 1 4 16.5v-9Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+              <path d="M4 9h15M15.5 13.5h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+          </span>
+          SmartSpend
+        </a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+          <svg class="icon icon-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
+          <svg class="icon icon-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+        </button>
+      </div>
+
+      <div class="auth-card">
+        <div class="auth-heading">
+          <span class="pill"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-shield"></use></svg> Secure server-side access</span>
+          <h2>Welcome back</h2>
+          <p>Sign in to your SmartSpend account to continue.</p>
+        </div>
+
+        <div class="alert" id="login-alert" role="alert" hidden></div>
+
+        <form id="login-form" novalidate>
+          <div class="field">
+            <label for="identifier">Email or username</label>
+            <div class="input-wrap">
+              <svg class="input-icon" aria-hidden="true"><use href="#i-user"></use></svg>
+              <input id="identifier" name="identifier" type="text" autocomplete="username" inputmode="email" placeholder="you@example.com" aria-describedby="identifier-hint identifier-error" required>
+            </div>
+            <p class="field-hint" id="identifier-hint">Use the email or username you registered with.</p>
+            <p class="field-error" id="identifier-error" role="alert"></p>
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="input-wrap input-wrap--password">
+              <svg class="input-icon" aria-hidden="true"><use href="#i-lock"></use></svg>
+              <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" aria-describedby="password-error" required>
+              <button class="password-toggle" type="button" data-toggle-password="password" aria-label="Show password" aria-pressed="false" title="Show password">
+                <svg class="icon icon-eye" aria-hidden="true"><use href="#i-eye"></use></svg>
+                <svg class="icon icon-eye-off" aria-hidden="true"><use href="#i-eye-off"></use></svg>
+              </button>
+            </div>
+            <p class="field-error" id="password-error" role="alert"></p>
+          </div>
+
+          <div class="form-row">
+            <label class="checkbox">
+              <input type="checkbox" id="remember" name="remember">
+              <span class="checkbox__box"><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg></span>
+              <span>Remember me</span>
+            </label>
+            <button class="link-button" type="button" data-open-dialog="forgot-dialog">Forgot password?</button>
+          </div>
+
+          <button class="btn btn--primary btn--full" type="submit" id="login-submit">
+            <span class="btn__label">Sign in</span>
+            <span class="btn__spinner" aria-hidden="true"></span>
+          </button>
+        </form>
+
+        <div class="divider"><span>New to SmartSpend?</span></div>
+
+        <a class="btn btn--ghost btn--full" href="register.html">
+          Create an account
+          <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+        </a>
+
+        <div class="demo-card">
+          <div>
+            <strong>Just exploring?</strong>
+            <span>Open the demo account with one click.</span>
+          </div>
+          <button class="btn btn--soft btn--sm" type="button" id="demo-login">
+            <span class="btn__label">Use demo</span>
+            <span class="btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+
+      <p class="auth-foot">
+        © 2026 SmartSpend · Java 17 + SQLite · Sessions secured with HttpOnly cookies.
+      </p>
+    </main>
+  </div>
+
+  <dialog class="modal" id="forgot-dialog" aria-labelledby="forgot-title">
+    <div class="modal__card">
+      <div class="modal__head">
+        <span class="modal__icon">
+          <svg class="icon icon--lg" aria-hidden="true"><use href="#i-key"></use></svg>
+        </span>
+        <div class="modal__head-text">
+          <h2 id="forgot-title">Password help</h2>
+          <p>How to regain access to your workspace.</p>
+        </div>
+        <button class="btn btn--icon" type="button" data-close-dialog aria-label="Close dialog">
+          <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+        </button>
+      </div>
+      <p class="muted" style="font-size: .84rem; line-height: 1.6;">
+        SmartSpend does not send email, so it cannot offer an automated reset link. If you are
+        already signed in, open <b>Account → Change password</b> to set a new one. Otherwise sign in
+        with your current password, use the demo account, or register with a different email address.
+      </p>
+      <div class="modal__note">
+        <svg class="icon icon--sm" aria-hidden="true"><use href="#i-info"></use></svg>
+        <span>If you changed the demo password, the <b>Use demo</b> button restores its default access.</span>
+      </div>
+      <div class="modal__actions">
+        <button class="btn btn--primary" type="button" data-close-dialog>Got it</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/crypto.js"></script>
+  <script src="js/validators.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

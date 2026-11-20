@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f5fb">
+  <meta name="description" content="SmartSpend settings: currency, date format, theme, notifications, categories, CSV export, JSON backup and demo data reset.">
+  <title>Settings · SmartSpend</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("smartspend.theme.v1");
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+      } catch (error) {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/finance.css">
+</head>
+<body class="app-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation"></aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="app-main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content" id="main-content">
+        <section class="page-head">
+          <div class="page-head__copy">
+            <span class="eyebrow"><span class="status-dot"></span> Workspace</span>
+            <h1>Settings</h1>
+            <p>Shape how SmartSpend behaves, manage categories and keep a portable copy of your finance data.</p>
+          </div>
+          <div class="page-head__actions">
+            <a class="btn btn--ghost" href="account.html">
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-user"></use></svg>
+              Account &amp; security
+            </a>
+          </div>
+        </section>
+
+        <div class="settings-layout">
+          <nav class="card settings-nav" aria-label="Settings sections">
+            <a href="#preferences" data-settings-link>
+              <svg class="icon" aria-hidden="true"><use href="#i-sliders"></use></svg>
+              Preferences
+            </a>
+            <a href="#appearance" data-settings-link>
+              <svg class="icon" aria-hidden="true"><use href="#i-sun"></use></svg>
+              Appearance
+            </a>
+            <a href="#notifications" data-settings-link>
+              <svg class="icon" aria-hidden="true"><use href="#i-bell"></use></svg>
+              Notifications
+            </a>
+            <a href="#categories" data-settings-link>
+              <svg class="icon" aria-hidden="true"><use href="#i-tag"></use></svg>
+              Categories
+            </a>
+            <a href="#data" data-settings-link>
+              <svg class="icon" aria-hidden="true"><use href="#i-database"></use></svg>
+              Data &amp; backup
+            </a>
+            <a href="#account" data-settings-link>
+              <svg class="icon" aria-hidden="true"><use href="#i-shield"></use></svg>
+              Account
+            </a>
+          </nav>
+
+          <div class="settings-stack">
+            <section class="card" id="preferences" aria-labelledby="preferences-title">
+              <div class="card__head">
+                <div class="card__title">
+                  <h2 id="preferences-title">Preferences</h2>
+                  <p>Currency, date display and the monthly income you are aiming for.</p>
+                </div>
+              </div>
+              <div class="card__body">
+                <form id="prefs-form" novalidate>
+                  <div class="setting-form-grid">
+                    <div class="field">
+                      <label for="pref-currency">Currency</label>
+                      <div class="input-wrap input-wrap--plain select-wrap">
+                        <select id="pref-currency"></select>
+                      </div>
+                      <p class="field-hint">Every amount and chart updates with the chosen currency.</p>
+                    </div>
+
+                    <div class="field">
+                      <label for="pref-date-format">Date format</label>
+                      <div class="input-wrap input-wrap--plain select-wrap">
+                        <select id="pref-date-format"></select>
+                      </div>
+                      <p class="field-hint">Used across the ledger, budgets, reports and goals.</p>
+                    </div>
+
+                    <div class="field">
+                      <label for="pref-income-target">Monthly income target</label>
+                      <div class="input-wrap input-wrap--plain amount-input">
+                        <span class="amount-input__symbol" id="pref-currency-symbol"></span>
+                        <input id="pref-income-target" type="number" inputmode="decimal" min="0" step="1" placeholder="0">
+                      </div>
+                    </div>
+
+                    <div class="field">
+                      <label for="pref-note">Workspace note <span class="label-optional">optional</span></label>
+                      <div class="input-wrap input-wrap--plain">
+                        <input id="pref-note" type="text" maxlength="160" placeholder="e.g. Semester budget plan">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="setting-actions">
+                    <button class="btn btn--primary" type="submit" id="prefs-save">
+                      <span class="btn__label">Save preferences</span>
+                      <span class="btn__spinner" aria-hidden="true"></span>
+                    </button>
+                    <span class="field-hint">Changes apply immediately after saving.</span>
+                  </div>
+                </form>
+              </div>
+            </section>
+
+            <section class="card" id="appearance" aria-labelledby="appearance-title">
+              <div class="card__head">
+                <div class="card__title">
+                  <h2 id="appearance-title">Appearance</h2>
+                  <p>Choose a light or dark workspace, or follow your operating system.</p>
+                </div>
+              </div>
+              <div class="card__body">
+                <div class="setting-row">
+                  <div class="setting-row__copy">
+                    <strong>Theme</strong>
+                    <span>The choice is remembered for every SmartSpend page on this device.</span>
+                  </div>
+                  <div class="theme-choice" role="group" aria-label="Theme">
+                    <button type="button" data-theme-choice="system">
+                      <svg class="icon icon--sm" aria-hidden="true"><use href="#i-laptop"></use></svg>
+                      System
+                    </button>
+                    <button type="button" data-theme-choice="light">
+                      <svg class="icon icon--sm" aria-hidden="true"><use href="#i-sun"></use></svg>
+                      Light
+                    </button>
+                    <button type="button" data-theme-choice="dark">
+                      <svg class="icon icon--sm" aria-hidden="true"><use href="#i-moon"></use></svg>
+                      Dark
+                    </button>
+                  </div>
+                </div>
+                <p class="hint-banner" style="margin-top:1rem">
+                  <svg class="icon icon--sm" aria-hidden="true"><use href="#i-info"></use></svg>
+                  <span>The theme toggle in the top bar also updates this preference instantly.</span>
+                </p>
+              </div>
+            </section>
+
+            <section class="card" id="notifications" aria-labelledby="notifications-title">
+              <div class="card__head">
+                <div class="card__title">
+                  <h2 id="notifications-title">Notifications</h2>
+                  <p>Choose which alerts appear in the bell and on the budget and goal screens.</p>
+                </div>
+              </div>
+              <div class="card__body">
+                <div class="setting-group">
+                  <div class="setting-row">
+                    <div class="setting-row__copy">
+                      <strong>Budget alerts</strong>
+                      <span>Warn when a category crosses 80% or goes over its monthly limit.</span>
+                    </div>
+                    <label class="switch">
+                      <input type="checkbox" data-notification="budgetAlerts" aria-label="Budget alerts">
+                      <span class="switch__track"></span>
+                    </label>
+                  </div>
+                  <div class="setting-row">
+                    <div class="setting-row__copy">
+                      <strong>Goal reminders</strong>
+                      <span>Surface goals that are close to their deadline and behind schedule.</span>
+                    </div>
+                    <label class="switch">
+                      <input type="checkbox" data-notification="goalReminders" aria-label="Goal reminders">
+                      <span class="switch__track"></span>
+                    </label>
+                  </div>
+                  <div class="setting-row">
+                    <div class="setting-row__copy">
+                      <strong>Weekly digest</strong>
+                      <span>A short summary of transactions, spending and net savings.</span>
+                    </div>
+                    <label class="switch">
+                      <input type="checkbox" data-notification="weeklyDigest" aria-label="Weekly digest">
+                      <span class="switch__track"></span>
+                    </label>
+                  </div>
+                  <div class="setting-row">
+                    <div class="setting-row__copy">
+                      <strong>Recurring reminders</strong>
+                      <span>Tell me when a scheduled recurring transaction is due to post.</span>
+                    </div>
+                    <label class="switch">
+                      <input type="checkbox" data-notification="recurringReminders" aria-label="Recurring reminders">
+                      <span class="switch__track"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card" id="categories" aria-labelledby="categories-title">
+              <div class="card__head">
+                <div class="card__title">
+                  <h2 id="categories-title">Categories</h2>
+                  <p>Rename, recolour or add categories. Default categories cannot be deleted.</p>
+                </div>
+                <button class="btn btn--ghost btn--sm" type="button" id="add-category">
+                  <svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus"></use></svg>
+                  Add category
+                </button>
+              </div>
+              <div class="card__body">
+                <div class="category-groups" id="category-groups" aria-live="polite"></div>
+              </div>
+            </section>
+
+            <section class="card" id="data" aria-labelledby="data-title">
+              <div class="card__head">
+                <div class="card__title">
+                  <h2 id="data-title">Data &amp; backup</h2>
+                  <p>Download a portable copy, import a backup or start again with fresh sample data.</p>
+                </div>
+              </div>
+              <div class="card__body">
+                <div class="data-actions">
+                  <button class="data-action" type="button" id="export-json">
+                    <span class="data-action__icon"><svg class="icon" aria-hidden="true"><use href="#i-download"></use></svg></span>
+                    <strong>Export JSON backup</strong>
+                    <span>Everything: transactions, budgets, goals, settings.</span>
+                  </button>
+                  <button class="data-action" type="button" id="export-csv">
+                    <span class="data-action__icon"><svg class="icon" aria-hidden="true"><use href="#i-file-text"></use></svg></span>
+                    <strong>Export transactions CSV</strong>
+                    <span>A spreadsheet-friendly list of every entry.</span>
+                  </button>
+                  <button class="data-action" type="button" id="import-json">
+                    <span class="data-action__icon"><svg class="icon" aria-hidden="true"><use href="#i-upload"></use></svg></span>
+                    <strong>Import JSON backup</strong>
+                    <span>Replace the current workspace with a SmartSpend backup.</span>
+                  </button>
+                  <button class="data-action data-action--danger" type="button" id="reset-demo">
+                    <span class="data-action__icon"><svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg></span>
+                    <strong>Reset demo data</strong>
+                    <span>Restore the sample ledger, budgets and goals for this account.</span>
+                  </button>
+                </div>
+                <input type="file" id="import-file" accept="application/json,.json" hidden>
+
+                <div class="usage-list" id="usage-list" aria-label="Current data usage"></div>
+
+                <p class="hint-banner" style="margin-top:0.9rem">
+                  <svg class="icon icon--sm" aria-hidden="true"><use href="#i-shield"></use></svg>
+                  <span>Your workspace is stored in the local SQLite database. Export a JSON backup before clearing app data, and never upload a backup containing real financial information.</span>
+                </p>
+              </div>
+            </section>
+
+            <section class="card" id="account" aria-labelledby="account-title">
+              <div class="card__head">
+                <div class="card__title">
+                  <h2 id="account-title">Account</h2>
+                  <p>Profile, password and active session.</p>
+                </div>
+              </div>
+              <div class="card__body">
+                <div class="setting-row">
+                  <div class="setting-row__copy">
+                    <strong id="account-name">SmartSpend user</strong>
+                    <span id="account-email">you@example.com</span>
+                  </div>
+                  <div class="setting-row__control" style="display:flex;gap:0.5rem;justify-content:flex-end">
+                    <a class="btn btn--ghost btn--sm" href="account.html">Open account</a>
+                    <button class="btn btn--danger-ghost btn--sm" type="button" id="settings-signout">
+                      <svg class="icon icon--sm" aria-hidden="true"><use href="#i-logout"></use></svg>
+                      Sign out
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <footer class="app-footer">
+              <span>
+                <svg class="icon icon--sm" aria-hidden="true"><use href="#i-settings"></use></svg>
+                Preferences saved to your SQLite user profile
+              </span>
+              <span>© 2026 SmartSpend</span>
+            </footer>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="modal" id="category-dialog" aria-labelledby="category-dialog-title">
+    <div class="modal__card">
+      <div class="modal__head">
+        <span class="modal__icon">
+          <svg class="icon icon--lg" aria-hidden="true"><use href="#i-tag"></use></svg>
+        </span>
+        <div class="modal__head-text">
+          <h2 id="category-dialog-title">Add category</h2>
+          <p id="category-dialog-subtitle">Give it a name, colour and icon.</p>
+        </div>
+        <button class="btn btn--icon" type="button" data-close-dialog aria-label="Close dialog">
+          <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+        </button>
+      </div>
+
+      <div class="alert" id="category-alert" role="alert" hidden></div>
+
+      <form id="category-form" novalidate>
+        <div class="segmented" role="group" aria-label="Category type">
+          <button class="segmented__button is-active" type="button" data-category-type="expense">
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-up"></use></svg>
+            Expense
+          </button>
+          <button class="segmented__button" type="button" data-category-type="income">
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-down"></use></svg>
+            Income
+          </button>
+        </div>
+
+        <div class="field">
+          <label for="category-name">Category name</label>
+          <div class="input-wrap input-wrap--plain">
+            <input id="category-name" type="text" maxlength="32" placeholder="e.g. Hobbies" required>
+          </div>
+          <p class="field-error" id="category-name-error" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <span class="field__label">Colour</span>
+          <div class="color-field" id="category-colors" role="group" aria-label="Category colour"></div>
+        </div>
+
+        <div class="field">
+          <span class="field__label">Icon</span>
+          <div class="icon-choice" id="category-icons" role="group" aria-label="Category icon"></div>
+        </div>
+
+        <div class="modal__actions">
+          <button class="btn btn--ghost" type="button" data-close-dialog>Cancel</button>
+          <button class="btn btn--primary" type="submit" id="category-save">
+            <span class="btn__label">Save category</span>
+            <span class="btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/crypto.js"></script>
+  <script src="js/validators.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/money.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/dsa.js"></script>
+  <script src="js/finance.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/tx-dialog.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/settings.js"></script>
+</body>
+</html>
