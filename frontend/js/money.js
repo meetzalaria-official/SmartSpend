@@ -127,7 +127,7 @@
   }
 
   /* ------------------------------------------------------------------------
-     Dates — every date in the demo store is a local YYYY-MM-DD string.
+     Dates — every date in the offline store is a local YYYY-MM-DD string.
      Using local dates avoids the timezone drift that `new Date("2026-01-01")`
      introduces for users east or west of UTC.
      ------------------------------------------------------------------------ */

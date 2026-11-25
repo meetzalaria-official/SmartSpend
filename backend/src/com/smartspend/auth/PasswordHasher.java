@@ -11,7 +11,7 @@ import javax.crypto.spec.PBEKeySpec;
 
 /**
  * PBKDF2-HMAC-SHA256 password hashing, matching the scheme documented for the
- * browser demo (210,000 iterations, 16-byte salt, 256-bit derived key).
+ * offline adapter (210,000 iterations, 16-byte salt, 256-bit derived key).
  *
  * <p>Stored format: {@code pbkdf2-sha256$210000$<salt-base64>$<hash-base64>}.
  * Plain passwords are never written to the database.</p>

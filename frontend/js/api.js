@@ -1,7 +1,7 @@
 /* ==========================================================================
    SmartSpend · Authentication API
-   The pages call this facade only. Phase 8 uses the Java REST adapter; the
-   offline browser adapter remains available for demos without a backend.
+   The pages call this facade only. The live app uses the Java REST adapter; the
+   offline browser adapter remains available without a backend.
    ========================================================================== */
 (function (window) {
   "use strict";
@@ -56,7 +56,7 @@
   }
 
   /* ------------------------------------------------------------------------
-     Demo adapter
+     Offline adapter
      ------------------------------------------------------------------------ */
   const mock = {
     async register(payload) {
@@ -258,50 +258,6 @@
       return { available: true, message: "Email is available." };
     },
 
-    async loginDemo() {
-      const demo = SS.config.demo;
-      await delay(150, 280);
-
-      let user = store.findUserByIdentifier(demo.email);
-      if (!user) {
-        const passwordRecord = await crypto.createPasswordRecord(demo.password);
-        const timestamp = nowIso();
-        user = {
-          id: crypto.randomId(),
-          fullName: demo.fullName,
-          username: demo.username,
-          email: demo.email,
-          password: passwordRecord,
-          createdAt: timestamp,
-          updatedAt: timestamp,
-          lastLoginAt: timestamp,
-          passwordChangedAt: timestamp,
-          demo: true,
-        };
-        store.addUser(user);
-      }
-
-      try {
-        return await mock.login({
-          identifier: demo.email,
-          password: demo.password,
-          remember: true,
-        });
-      } catch (error) {
-        /* A visitor may have changed the demo password. Restore demo access. */
-        const record = await crypto.createPasswordRecord(demo.password);
-        store.updateUser(user.id, {
-          fullName: demo.fullName,
-          password: record,
-          passwordChangedAt: nowIso(),
-        });
-        return mock.login({
-          identifier: demo.email,
-          password: demo.password,
-          remember: true,
-        });
-      }
-    },
   };
 
   /* ------------------------------------------------------------------------
@@ -407,9 +363,6 @@
     checkEmail(email) {
       return request(`/auth/check-email?email=${encodeURIComponent(email)}`);
     },
-    loginDemo() {
-      return request("/auth/demo", { method: "POST" }).then(unwrapUser);
-    },
   };
 
   const adapter = isMock() ? mock : remote;
@@ -426,6 +379,5 @@
     changePassword: (payload) => adapter.changePassword(payload),
     checkUsername: (username) => adapter.checkUsername(username),
     checkEmail: (email) => adapter.checkEmail(email),
-    loginDemo: () => adapter.loginDemo(),
   };
 })(window);

@@ -1,7 +1,7 @@
 /* ==========================================================================
-   SmartSpend · Password hashing (offline demo adapter)
+   SmartSpend · Password hashing (offline adapter)
    PBKDF2-HMAC-SHA256 with a unique random salt per account. The Java backend
-   owns authentication in Phase 8; this module only supports the offline demo.
+   owns authentication in the live app; this module only supports the offline adapter.
    ========================================================================== */
 (function (window) {
   "use strict";

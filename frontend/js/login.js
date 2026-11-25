@@ -15,7 +15,6 @@
     const password = document.getElementById("password");
     const remember = document.getElementById("remember");
     const submit = document.getElementById("login-submit");
-    const demoButton = document.getElementById("demo-login");
     const alertBox = document.getElementById("login-alert");
     const params = new URLSearchParams(window.location.search);
     const next = SS.auth.safeNext(params.get("next"));
@@ -99,24 +98,6 @@
         ui.focusFirstInvalid(form);
       } finally {
         ui.setLoading(submit, false);
-      }
-    });
-
-    demoButton.addEventListener("click", async () => {
-      ui.hideAlert(alertBox);
-      ui.setLoading(demoButton, true);
-      try {
-        const user = await SS.api.loginDemo();
-        SS.auth.setFlash(
-          "success",
-          "Demo account ready",
-          `Signed in as ${user.fullName}. Explore your workspace.`
-        );
-        window.location.replace(next);
-      } catch (error) {
-        showGeneralError(error);
-      } finally {
-        ui.setLoading(demoButton, false);
       }
     });
   });

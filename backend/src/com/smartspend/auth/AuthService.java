@@ -1,7 +1,6 @@
 package com.smartspend.auth;
 
 import com.smartspend.db.Db;
-import com.smartspend.finance.SeedService;
 import com.smartspend.json.Json;
 import com.smartspend.server.ApiException;
 
@@ -20,22 +19,15 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class AuthService {
 
-    private static final String DEMO_EMAIL = "demo@smartspend.app";
-    private static final String DEMO_USERNAME = "demouser";
-    private static final String DEMO_NAME = "Demo User";
-    private static final String DEMO_PASSWORD = "Demo@1234";
-
     private static final int MAX_FAILURES = 10;
     private static final long FAILURE_WINDOW_MILLIS = 5 * 60 * 1000L;
 
     private final Db db;
-    private final SeedService seed;
     private final SessionService sessions;
     private final Map<String, Deque<Long>> failures = new ConcurrentHashMap<>();
 
-    public AuthService(Db db, SeedService seed, SessionService sessions) {
+    public AuthService(Db db, SessionService sessions) {
         this.db = db;
-        this.seed = seed;
         this.sessions = sessions;
     }
 
@@ -65,12 +57,12 @@ public final class AuthService {
 
         String hash = PasswordHasher.hash(password);
         String now = Instant.now().toString();
-        User user = new User(id("usr"), fullName, username, email, hash, now, now, now, now, false);
+        User user = new User(id("usr"), fullName, username, email, hash, now, now, now, now);
 
         db.tx(connection -> {
             try (PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO users(id, full_name, username, email, password_hash, created_at, updated_at, "
-                            + "last_login_at, password_changed_at, is_demo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)")) {
+                            + "last_login_at, password_changed_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                 statement.setString(1, user.id());
                 statement.setString(2, user.fullName());
                 statement.setString(3, user.username());
@@ -82,7 +74,7 @@ public final class AuthService {
                 statement.setString(9, user.passwordChangedAt());
                 statement.executeUpdate();
             }
-            seed.seedUser(connection, user.id(), fullName);
+            initializeWorkspace(connection, user.id(), now);
             return null;
         });
 
@@ -124,45 +116,6 @@ public final class AuthService {
         User updated = findById(user.id());
         SessionService.SessionInfo session = sessions.create(user.id(), remember, userAgent);
         return new AuthResult(updated == null ? user : updated, session);
-    }
-
-    public AuthResult loginDemo(String userAgent) {
-        User existing = findByUsernameOrEmail(DEMO_EMAIL);
-        String now = Instant.now().toString();
-
-        if (existing == null) {
-            User user = new User(id("usr"), DEMO_NAME, DEMO_USERNAME, DEMO_EMAIL,
-                    PasswordHasher.hash(DEMO_PASSWORD), now, now, now, now, true);
-            db.tx(connection -> {
-                try (PreparedStatement statement = connection.prepareStatement(
-                        "INSERT INTO users(id, full_name, username, email, password_hash, created_at, updated_at, "
-                                + "last_login_at, password_changed_at, is_demo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)")) {
-                    statement.setString(1, user.id());
-                    statement.setString(2, user.fullName());
-                    statement.setString(3, user.username());
-                    statement.setString(4, user.email());
-                    statement.setString(5, user.passwordHash());
-                    statement.setString(6, user.createdAt());
-                    statement.setString(7, user.updatedAt());
-                    statement.setString(8, user.lastLoginAt());
-                    statement.setString(9, user.passwordChangedAt());
-                    statement.executeUpdate();
-                }
-                seed.seedUser(connection, user.id(), DEMO_NAME);
-                return null;
-            });
-            existing = user;
-        } else {
-            /* The demo button always restores the documented demo access. */
-            String hash = PasswordHasher.hash(DEMO_PASSWORD);
-            db.execute("UPDATE users SET full_name = ?, password_hash = ?, password_changed_at = ?, "
-                            + "last_login_at = ?, updated_at = ? WHERE id = ?",
-                    DEMO_NAME, hash, now, now, now, existing.id());
-            existing = findById(existing.id());
-        }
-
-        SessionService.SessionInfo session = sessions.create(existing.id(), true, userAgent);
-        return new AuthResult(existing, session);
     }
 
     public void logout(String token) {
@@ -310,6 +263,33 @@ public final class AuthService {
        Helpers
        --------------------------------------------------------------------- */
 
+    /**
+     * Prepares an empty workspace for a new account. It intentionally creates no
+     * categories, transactions, budgets or goals: the user adds every finance
+     * record from scratch, so one account can never inherit sample data or
+     * another account's history.
+     */
+    private static void initializeWorkspace(java.sql.Connection connection, String userId, String now)
+            throws SQLException {
+        try (PreparedStatement statement = connection.prepareStatement(
+                "INSERT OR IGNORE INTO user_settings(user_id, currency, date_format, month_start, week_start, "
+                        + "theme, profile_note, monthly_income_cents, notify_budget_alerts, notify_goal_reminders, "
+                        + "notify_weekly_digest, notify_recurring_reminders, updated_at) "
+                        + "VALUES (?, 'INR', 'DD MMM YYYY', 1, 'mon', 'light', '', 0, 1, 1, 1, 1, ?)")) {
+            statement.setString(1, userId);
+            statement.setString(2, now);
+            statement.executeUpdate();
+        }
+        try (PreparedStatement statement = connection.prepareStatement(
+                "INSERT OR IGNORE INTO user_state(user_id, read_notifications, dismissed_notifications, last_deleted, "
+                        + "recurring_queue, seeded_at, updated_at) VALUES (?, '[]', '[]', '[]', '[]', ?, ?)")) {
+            statement.setString(1, userId);
+            statement.setString(2, now);
+            statement.setString(3, now);
+            statement.executeUpdate();
+        }
+    }
+
     private static User userFrom(ResultSet rows) throws SQLException {
         return new User(
                 rows.getString("id"),
@@ -320,8 +300,7 @@ public final class AuthService {
                 rows.getString("created_at"),
                 rows.getString("updated_at"),
                 rows.getString("last_login_at"),
-                rows.getString("password_changed_at"),
-                rows.getInt("is_demo") == 1
+                rows.getString("password_changed_at")
         );
     }
 

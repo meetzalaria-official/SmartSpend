@@ -57,7 +57,6 @@
       exportCsv: document.getElementById("export-csv"),
       importJson: document.getElementById("import-json"),
       importFile: document.getElementById("import-file"),
-      resetDemo: document.getElementById("reset-demo"),
       usageList: document.getElementById("usage-list"),
       accountName: document.getElementById("account-name"),
       accountEmail: document.getElementById("account-email"),
@@ -241,7 +240,7 @@
           </button>
           ${
             category.system
-              ? `<span class="icon-action" title="Default categories cannot be deleted" aria-hidden="true">
+              ? `<span class="icon-action" title="This category cannot be deleted" aria-hidden="true">
                    <svg class="icon icon--sm"><use href="#i-lock"></use></svg>
                  </span>`
               : `<button class="icon-action icon-action--danger" type="button" data-category-delete="${escapeHtml(
@@ -395,7 +394,7 @@
 
       elements.categoryTitle.textContent = category ? "Edit category" : "Add category";
       elements.categorySubtitle.textContent = category
-        ? `${category.type === "income" ? "Income" : "Expense"} category · default categories can be renamed but not deleted.`
+        ? `${category.type === "income" ? "Income" : "Expense"} category · categories in use cannot be deleted.`
         : "Give it a name, colour and icon.";
       elements.categorySave.querySelector(".btn__label").textContent = category
         ? "Save changes"
@@ -577,29 +576,6 @@
         ui.toast.error("Could not import backup", message);
       } finally {
         elements.importFile.value = "";
-      }
-    });
-
-    elements.resetDemo.addEventListener("click", async () => {
-      const confirmed = await ui.confirm({
-        title: "Reset demo data?",
-        message:
-          "This replaces the current workspace with fresh sample transactions, budgets and goals. Export a backup first if you want to keep your changes.",
-        confirmLabel: "Reset demo data",
-        danger: true,
-        icon: "refresh",
-      });
-      if (!confirmed) return;
-
-      ui.setLoading(elements.resetDemo, true);
-      try {
-        await SS.finance.backup.resetDemo();
-        ui.toast.success("Demo data restored", "Reloading the workspace…");
-        window.setTimeout(() => window.location.reload(), 900);
-      } catch (error) {
-        ui.toast.error("Could not reset demo data", (error && error.message) || "Please try again.");
-      } finally {
-        ui.setLoading(elements.resetDemo, false);
       }
     });
 

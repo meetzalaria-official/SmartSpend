@@ -17,8 +17,7 @@ public record User(
         String createdAt,
         String updatedAt,
         String lastLoginAt,
-        String passwordChangedAt,
-        boolean demo
+        String passwordChangedAt
 ) {
 
     public Map<String, Object> toPublicJson() {

@@ -1,7 +1,7 @@
 /* ==========================================================================
    SmartSpend · Dependency-free SVG charts
    Line/area, grouped bars, donut and sparkline renderers. Each chart includes
-   a text description so screen readers and the viva demo can explain it.
+   a text description so screen readers can explain it.
    ========================================================================== */
 (function (window) {
   "use strict";

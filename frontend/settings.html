@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f4f5fb">
-  <meta name="description" content="SmartSpend settings: currency, date format, theme, notifications, categories, CSV export, JSON backup and demo data reset.">
+  <meta name="description" content="SmartSpend settings: currency, date format, theme, notifications, categories, CSV export and JSON backup.">
   <title>Settings · SmartSpend</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <script>
@@ -223,7 +223,7 @@
               <div class="card__head">
                 <div class="card__title">
                   <h2 id="categories-title">Categories</h2>
-                  <p>Rename, recolour or add categories. Default categories cannot be deleted.</p>
+                  <p>Add the income and expense categories you use. Categories in use cannot be deleted.</p>
                 </div>
                 <button class="btn btn--ghost btn--sm" type="button" id="add-category">
                   <svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus"></use></svg>
@@ -239,7 +239,7 @@
               <div class="card__head">
                 <div class="card__title">
                   <h2 id="data-title">Data &amp; backup</h2>
-                  <p>Download a portable copy, import a backup or start again with fresh sample data.</p>
+                  <p>Download a portable copy or import a backup.</p>
                 </div>
               </div>
               <div class="card__body">
@@ -258,11 +258,6 @@
                     <span class="data-action__icon"><svg class="icon" aria-hidden="true"><use href="#i-upload"></use></svg></span>
                     <strong>Import JSON backup</strong>
                     <span>Replace the current workspace with a SmartSpend backup.</span>
-                  </button>
-                  <button class="data-action data-action--danger" type="button" id="reset-demo">
-                    <span class="data-action__icon"><svg class="icon" aria-hidden="true"><use href="#i-refresh"></use></svg></span>
-                    <strong>Reset demo data</strong>
-                    <span>Restore the sample ledger, budgets and goals for this account.</span>
                   </button>
                 </div>
                 <input type="file" id="import-file" accept="application/json,.json" hidden>

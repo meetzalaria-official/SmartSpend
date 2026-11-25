@@ -310,12 +310,6 @@ public final class FinanceApi {
             Http.sendJson(exchange, 200, reports.importJson(userId, Http.body(exchange)));
             return;
         }
-        if ("/api/backup/reset".equals(path)) {
-            allow(method, "POST");
-            reports.resetDemo(userId);
-            Http.sendJson(exchange, 200, ok());
-            return;
-        }
         if ("/api/backup/usage".equals(path)) {
             allow(method, "GET");
             Http.sendJson(exchange, 200, reports.usage(userId));

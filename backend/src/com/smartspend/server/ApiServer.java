@@ -23,8 +23,6 @@ import java.util.Map;
  */
 public final class ApiServer {
 
-    private static final String PHASE = "8";
-
     private final Db db;
     private final AuthService auth;
     private final SessionService sessions;
@@ -72,7 +70,6 @@ public final class ApiServer {
             Map<String, Object> payload = Json.object();
             payload.put("status", "ok");
             payload.put("app", "SmartSpend");
-            payload.put("phase", Integer.parseInt(PHASE));
             payload.put("backend", "java");
             payload.put("auth", "session-cookie");
             payload.put("database", "sqlite");
@@ -97,14 +94,6 @@ public final class ApiServer {
             allow(method, "POST");
             AuthService.AuthResult result = auth.login(Http.body(exchange),
                     Http.clientAddress(exchange), userAgent(exchange));
-            Http.addHeader(exchange, "Set-Cookie", SessionService.cookieHeader(result.session()));
-            Http.sendJson(exchange, 200, wrapUser(result.user()));
-            return;
-        }
-
-        if ("/api/auth/demo".equals(path)) {
-            allow(method, "POST");
-            AuthService.AuthResult result = auth.loginDemo(userAgent(exchange));
             Http.addHeader(exchange, "Set-Cookie", SessionService.cookieHeader(result.session()));
             Http.sendJson(exchange, 200, wrapUser(result.user()));
             return;

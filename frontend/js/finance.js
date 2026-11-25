@@ -1,9 +1,8 @@
 /* ==========================================================================
    SmartSpend · Finance API facade
    Every finance screen talks to this module only. The browser adapter below
-   uses the local demo store; the Java/SQLite adapter can be enabled later by
-   flipping `useMockData` in config.js. Response shapes intentionally match
-   the planned REST endpoints.
+   uses the local browser store; the Java/SQLite adapter is the default in the
+   live app. Response shapes intentionally match the REST endpoints.
    ========================================================================== */
 (function (window) {
   "use strict";
@@ -298,13 +297,16 @@
       });
     }
 
+    const hasCategories = doc.categories.length > 0;
     items.push({
-      id: `welcome:${doc.seededAt || doc.state.createdAt || "demo"}`,
+      id: `welcome:${doc.seededAt || doc.state.createdAt || "workspace"}`,
       tone: "info",
       icon: "sparkles",
-      title: "Your demo workspace is ready",
-      message: "Explore every screen with realistic sample data, or reset it any time in Settings.",
-      link: "dashboard.html",
+      title: "Your workspace is ready",
+      message: hasCategories
+        ? "Review your latest activity or add a new transaction from the dashboard."
+        : "Add your first category in Settings, then record a transaction to get started.",
+      link: hasCategories ? "dashboard.html" : "settings.html#categories",
       createdAt: doc.seededAt || doc.state.createdAt || new Date().toISOString(),
       priority: 5,
     });
@@ -632,7 +634,7 @@
       if (!category) throw new FinanceError("That category no longer exists.", null, "NOT_FOUND");
       if (category.system) {
         throw new FinanceError(
-          "Default categories cannot be deleted. Rename or recolour it instead.",
+          "This category cannot be deleted. Rename or recolour it instead.",
           null,
           "SYSTEM_CATEGORY"
         );
@@ -1099,8 +1101,8 @@
       }
       const doc = await loadDoc();
       const incoming = data.clone(source);
-      if (!incoming.categories.length) {
-        throw new FinanceError("The backup has no categories.", null, "INVALID_BACKUP");
+      if (!incoming.categories.length && incoming.transactions.length) {
+        throw new FinanceError("The backup has no categories for its transactions.", null, "INVALID_BACKUP");
       }
       doc.categories = incoming.categories;
       doc.transactions = incoming.transactions.filter(
@@ -1127,16 +1129,6 @@
         categories: doc.categories.length,
         goals: doc.goals.length,
       };
-    },
-
-    async resetDemo() {
-      const id = await userId();
-      const user = await SS.api.getCurrentUser();
-      const fresh = data.reset(id, user && user.fullName);
-      cache = { userId: id, doc: fresh };
-      money.setCurrency(fresh.settings.currency || "INR");
-      document.dispatchEvent(new CustomEvent("ss:data-changed"));
-      return true;
     },
 
     async usage() {
@@ -1177,7 +1169,7 @@
   /* ------------------------------------------------------------------------
      Java + SQLite REST adapter
      The backend stores money as integer cents and returns the same object
-     shapes as the demo store, so screens stay adapter-agnostic.
+     shapes as the offline store, so screens stay adapter-agnostic.
      ------------------------------------------------------------------------ */
   function isMockData() {
     return Boolean(SS.config.useMockData);
@@ -1514,9 +1506,6 @@
       },
       importJson(payload) {
         return mutate("/backup/import", { method: "POST", body: payload }, null);
-      },
-      resetDemo() {
-        return mutate("/backup/reset", { method: "POST" }, null).then(() => true);
       },
       usage() {
         return request("/backup/usage");

@@ -12,10 +12,11 @@ small, dependency-light full stack:
   cookies, user-scoped SQL queries, rate limiting and security headers
 
 > **Status: complete.** Registration, login, sessions, profile editing, dashboard,
-> transactions, budgets, savings goals, reports, settings, notifications, CSV/JSON export,
-> backup import and demo reset all run against the Java REST API and a persistent SQLite
-> database. The browser demo adapters remain available as an offline fallback by flipping two
-> flags in `frontend/js/config.js`.
+> transactions, budgets, savings goals, reports, settings, notifications, CSV/JSON export
+> and backup import all run against the Java REST API and a persistent SQLite database.
+> Every new account starts with an empty workspace: the user creates their own categories,
+> transactions, budgets and goals. The offline browser adapters remain available by
+> flipping two flags in `frontend/js/config.js`.
 
 ---
 
@@ -82,7 +83,7 @@ The data location can also be set with `SMARTSPEND_DATA` (environment variable) 
 
 - The live app uses an **HttpOnly session cookie**, which only works when pages and API share
   an origin.
-- The offline demo adapter uses the Web Crypto API, which browsers expose only in a secure
+- The offline adapter uses the Web Crypto API, which browsers expose only in a secure
   context (`http://127.0.0.1` counts as secure).
 - One origin keeps `login.html`, `register.html` and every app page on the same storage
   origin.
@@ -92,21 +93,20 @@ from the same process.
 
 ---
 
-## 2. Demo account
+## 2. New accounts start empty
 
-The login page has a **Use demo** button. It creates (or restores) this account:
+Every registration creates an empty workspace. SmartSpend does **not** create sample
+transactions, budgets, goals or categories, and it never copies data from another account.
 
-| Field | Value |
-|---|---|
-| Email | `demo@smartspend.app` |
-| Username | `demouser` |
-| Password | `Demo@1234` |
+To get started:
 
-A new demo account is seeded automatically with 17 categories, eight months of realistic
-transactions, monthly budgets and savings goals.
+1. Register or sign in.
+2. Open **Settings → Categories** and add the income/expense categories you use.
+3. Add transactions from the dashboard, the ledger or the quick-add dialog.
+4. Create budgets and savings goals when you are ready.
 
-Clicking **Use demo** always restores the documented demo password. It does **not** erase the
-demo workspace; use **Settings → Data & backup → Reset demo data** for that.
+Because categories are user-defined, the transaction dialog asks you to create one first when
+the workspace has no categories yet.
 
 ---
 
@@ -136,7 +136,6 @@ demo workspace; use **Settings → Data & backup → Reset demo data** for that.
 - Copy account ID to the clipboard.
 - Session information: sign-in time, expiry and remember mode.
 - Quick add transaction and live notifications from the account page.
-- Project progress panel showing the complete stack.
 
 ### Dashboard
 
@@ -177,7 +176,7 @@ demo workspace; use **Settings → Data & backup → Reset demo data** for that.
 - Currency, date format, monthly income target and workspace note.
 - Light/dark/system theme and four notification switches.
 - Category manager with colour and icon choices.
-- JSON backup export/import, CSV export, demo reset and usage statistics.
+- JSON backup export/import, CSV export and usage statistics.
 - Sign-out and links to the account/security page.
 
 ### Interface
@@ -199,7 +198,7 @@ demo workspace; use **Settings → Data & backup → Reset demo data** for that.
 | HTML5 | Semantic page structure |
 | CSS3 | Design tokens, light/dark themes, responsive layout |
 | Vanilla JavaScript (ES2020+) | Forms, validation, finance logic, charts and UI behaviour |
-| Web Crypto API | PBKDF2 hashing only in the optional offline demo adapter |
+| Web Crypto API | PBKDF2 hashing only in the optional offline adapter |
 | Java 17 | REST API, static file server and business rules |
 | `com.sun.net.httpserver` | Dependency-free HTTP server |
 | SQLite + `sqlite-jdbc` | Persistent relational storage |
@@ -228,13 +227,13 @@ smartSpend/
 │   └── js/
 │       ├── config.js           App settings and adapter switches
 │       ├── icons.js            Inline SVG icon sprite
-│       ├── storage.js          Offline demo store, theme and flash messages
-│       ├── crypto.js           PBKDF2 hashing for the offline demo
+│       ├── storage.js          Offline store, theme and flash messages
+│       ├── crypto.js           PBKDF2 hashing for the offline adapter
 │       ├── validators.js       Shared input rules and password strength
 │       ├── api.js              Auth API facade + optional browser adapter
 │       ├── auth.js             Route guards, flash messages, logout
 │       ├── money.js            Currency and date formatting
-│       ├── data.js             Offline finance store and seed data
+│       ├── data.js             Offline finance store
 │       ├── finance.js          Finance API facade + optional browser adapter
 │       ├── dsa.js              Sorting, searching, stack, queue and tree helpers
 │       ├── ui.js               Theme, toasts, fields, dialogs, formatting
@@ -246,7 +245,7 @@ smartSpend/
 │   ├── src/com/smartspend/
 │   │   ├── auth/               AuthService, PasswordHasher, SessionService, User, Validation
 │   │   ├── db/                 Db connection factory and SQLite schema
-│   │   ├── finance/            FinanceService, ReportService, SeedService, Rows
+│   │   ├── finance/            FinanceService, ReportService, Rows
 │   │   ├── json/               Small JSON reader/writer
 │   │   └── server/             PreviewServer, ApiServer, FinanceApi, Http, ApiException
 │   ├── lib/sqlite-jdbc-3.54.1.0.jar
@@ -330,7 +329,7 @@ for security.
 - Request bodies are capped at 8 MiB.
 - The server binds to `127.0.0.1` for local use.
 
-> **Production note:** the local demo runs over HTTP. A real deployment would add HTTPS,
+> **Production note:** the local development build runs over HTTP. A real deployment would add HTTPS,
 > the `Secure` cookie attribute, a production reverse proxy and an email service for password
 > recovery.
 
@@ -352,13 +351,12 @@ All API responses are JSON except the CSV export. Errors use:
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| `GET` | `/api/health` | Health, phase and database information |
+| `GET` | `/api/health` | Health and database information |
 | `POST` | `/api/auth/register` | Create an account and start a session |
 | `POST` | `/api/auth/login` | Sign in by username or email |
 | `POST` | `/api/auth/logout` | End the session |
 | `GET` | `/api/auth/me` | Return the signed-in user |
 | `GET` | `/api/auth/session` | Return session metadata |
-| `POST` | `/api/auth/demo` | Create/restore the demo account |
 | `POST` | `/api/auth/change-password` | Verify the current password and set a new one |
 | `PATCH`, `PUT` | `/api/users/me` | Update full name and email |
 | `GET` | `/api/auth/check-username?username=…` | Availability check |
@@ -376,8 +374,7 @@ The user shape is:
     "createdAt": "2026-11-14T10:00:00Z",
     "updatedAt": "2026-11-14T10:00:00Z",
     "lastLoginAt": "2026-11-14T10:05:00Z",
-    "passwordChangedAt": "2026-11-14T10:00:00Z",
-    "demo": false
+    "passwordChangedAt": "2026-11-14T10:00:00Z"
   }
 }
 ```
@@ -427,7 +424,6 @@ The user shape is:
 | `GET` | `/api/backup/json` | Complete JSON backup |
 | `GET` | `/api/backup/transactions.csv?from=&to=` | CSV export |
 | `POST` | `/api/backup/import` | Replace the workspace from a backup |
-| `POST` | `/api/backup/reset` | Re-seed the demo workspace |
 | `GET` | `/api/backup/usage` | Row counts and backup size |
 
 Money is stored as integer paise/cents in SQLite and converted to decimal amounts in the API,
@@ -457,11 +453,12 @@ Foreign keys and `PRAGMA busy_timeout` are enabled per connection, and the datab
 mode so reads and writes can proceed together.
 
 To start over, stop the server and delete `backend/data/smartspend.db` (plus `-wal`/`-shm`
-files if present). The next run creates and seeds a fresh database.
+files if present). The next run creates a fresh, empty database; new accounts begin with an
+empty workspace and add their own categories and finance records.
 
 ---
 
-## 10. Offline demo mode
+## 10. Offline mode
 
 To run the UI without a backend, open `frontend/js/config.js` and set:
 
@@ -472,10 +469,9 @@ useMockData: true,
 
 Then serve the `frontend` folder with any static server. Accounts and finance data are then
 stored in the browser's `localStorage`, and Web Crypto handles password hashing. This mode
-uses the same page controllers and the same validation rules; it exists for offline demos and
-for comparing the adapters.
+uses the same page controllers and validation rules, and new accounts also start empty.
 
-The default Phase 8 configuration is the live Java + SQLite stack:
+The default configuration is the live Java + SQLite stack:
 
 ```js
 useMockAuth: false,
@@ -497,6 +493,7 @@ Run `.\run.ps1`, then check:
 - [ ] Enter a password without a number → number rule is highlighted.
 - [ ] Enter mismatched passwords → confirmation error appears.
 - [ ] Register successfully → redirected to the account workspace with a welcome toast.
+- [ ] Confirm the new account has no transactions, budgets, goals or categories.
 - [ ] Log out and try to register the same username/email → duplicate errors appear.
 - [ ] Type an existing username and tab away → “already taken” message appears.
 
@@ -521,10 +518,10 @@ Run `.\run.ps1`, then check:
 - [ ] Log out, old password fails, new password works.
 - [ ] Copy account ID → clipboard contains the full ID.
 - [ ] Notification bell and user menu open/close; Escape closes them.
-- [ ] Use demo signs in with `demo@smartspend.app` / `Demo@1234`.
 
 **Finance**
 
+- [ ] With no categories yet, the transaction dialog explains that a category must be created first.
 - [ ] Add, edit and delete a transaction from the ledger and from the quick-add dialog.
 - [ ] Bulk select, delete, then use Undo.
 - [ ] Filter by type, category, period and search text; change sort order.
@@ -536,7 +533,6 @@ Run `.\run.ps1`, then check:
 - [ ] Toggle each notification switch → the bell updates after saving.
 - [ ] Add/rename/delete a category; deleting an in-use category is blocked.
 - [ ] Export a JSON backup, import it and confirm the counts.
-- [ ] Reset demo data → the sample ledger, budgets and goals return.
 
 **Interface**
 
@@ -578,8 +574,7 @@ migrations beyond schema version 1, and automated browser/API test suites.
 | “The database file is locked” | Make sure only one SmartSpend server is running against the same `.db` file. |
 | “Cannot reach the Java server” | Start the backend with `run.ps1`; the pages are served from the same origin. |
 | Login loop or stale page | The server sends `no-store`; reload with `Ctrl+F5`. Check the server console for errors. |
-| Demo data looks stale | Use **Settings → Reset demo data**, or delete `backend/data/smartspend.db` while the server is stopped. |
-| “Secure hashing is not available” | Only applies to offline demo mode: open the app through `http://127.0.0.1`, not as a `file://` page. |
+| “Secure hashing is not available” | Only applies to offline mode: open the app through `http://127.0.0.1`, not as a `file://` page. |
 | Fonts look different | The app uses the system UI font stack; no download is needed. |
 | Sidebar is open on desktop | Resize the window or reload; the mobile sidebar resets above 980px. |
 
@@ -596,7 +591,7 @@ migrations beyond schema version 1, and automated browser/API test suites.
 5. Demonstrate user separation: every finance query is scoped by `user_id`, so two accounts
    have independent ledgers.
 6. Show the adapter seam: two flags in `config.js` switch between the live Java API and the
-   offline demo without touching page controllers.
+   offline adapter without touching page controllers.
 7. Show the DSA helpers in `dsa.js` (merge sort, binary search, stack, queue, category tree)
    used by the ledger and reports.
 8. Mention the exact-money design: SQLite stores integer cents, avoiding floating-point

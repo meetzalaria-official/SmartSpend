@@ -5,7 +5,6 @@ import com.smartspend.auth.SessionService;
 import com.smartspend.db.Db;
 import com.smartspend.finance.FinanceService;
 import com.smartspend.finance.ReportService;
-import com.smartspend.finance.SeedService;
 import com.sun.net.httpserver.HttpServer;
 
 import java.awt.Desktop;
@@ -22,7 +21,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 
 /**
- * SmartSpend Phase 8 application server.
+ * SmartSpend application server.
  *
  * <p>Serves the vanilla HTML/CSS/JavaScript frontend and the Java REST API from
  * one origin, backed by SQLite through the bundled {@code sqlite-jdbc} driver.
@@ -111,10 +110,9 @@ public final class PreviewServer {
             return;
         }
 
-        SeedService seed = new SeedService();
         SessionService sessions = new SessionService(db);
-        AuthService auth = new AuthService(db, seed, sessions);
-        FinanceService finance = new FinanceService(db, seed);
+        AuthService auth = new AuthService(db, sessions);
+        FinanceService finance = new FinanceService(db);
         ReportService reports = new ReportService(db, finance);
         FinanceApi financeApi = new FinanceApi(finance, reports);
         ApiServer api = new ApiServer(db, auth, sessions, financeApi, root);
@@ -146,7 +144,7 @@ public final class PreviewServer {
 
         String url = "http://127.0.0.1:" + port + "/";
         System.out.println();
-        System.out.println("  SmartSpend - Phase 8 backend");
+        System.out.println("  SmartSpend - backend");
         System.out.println("  ----------------------------");
         System.out.println("  Frontend : " + root);
         System.out.println("  Database : " + db.file());

@@ -298,6 +298,14 @@
     }
 
     ui.hideAlert(elements.alert);
+    if (!categories.length) {
+      ui.showAlert(
+        elements.alert,
+        "info",
+        "Create an income or expense category in Settings → Categories, then add this transaction.",
+        "No categories yet"
+      );
+    }
     ui.setLoading(elements.save, false);
     ui.openDialog(dialog);
     window.setTimeout(() => elements.amount.focus(), 70);

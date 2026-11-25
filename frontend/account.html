@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f4f5fb">
-  <meta name="description" content="Your SmartSpend account workspace: profile, security, finance screens and project progress.">
+  <meta name="description" content="Your SmartSpend account workspace: profile, security and finance screens.">
   <title>Overview · SmartSpend</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <script>
@@ -86,12 +86,6 @@
       </nav>
 
       <div class="sidebar__spacer"></div>
-
-      <div class="sidebar__help">
-        <strong>Backend live</strong>
-        <p>Every screen reads and writes your own SQLite-backed workspace through the Java REST API.</p>
-        <span class="chip chip--success">Phases 1–8 complete</span>
-      </div>
 
       <div class="sidebar__profile">
         <span class="avatar avatar--sm" data-user-initials>SS</span>
@@ -183,7 +177,7 @@
       <main class="content" id="main-content">
         <section class="hero" id="overview" aria-labelledby="hero-title">
           <div class="hero__copy">
-            <span class="hero__eyebrow"><span class="status-dot"></span> Account ready · UI complete</span>
+            <span class="hero__eyebrow"><span class="status-dot"></span> Account ready</span>
             <h1 id="hero-title"><span data-greeting>Good morning</span>, <span data-user-first>there</span>.</h1>
             <p>Your SmartSpend account is set up and protected. The dashboard, ledger, budgets, goals and reports are all ready to use from the sidebar.</p>
           </div>
@@ -390,42 +384,10 @@
           </section>
         </div>
 
-        <section class="card phase-card" aria-labelledby="phase-title">
-          <div class="card__head">
-            <div class="card__title">
-              <h2 id="phase-title">Project progress</h2>
-              <p>The complete stack is implemented: responsive UI, Java REST API and SQLite storage.</p>
-            </div>
-            <span class="chip chip--success">Phases 1–8 complete</span>
-          </div>
-          <div class="card__body">
-            <div class="phase-progress">
-              <div class="phase-progress__track">
-                <div class="phase-progress__fill" style="width:100%"></div>
-              </div>
-              <span>100% complete · frontend, backend and database</span>
-            </div>
-            <ul class="phase-list">
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Registration, PBKDF2 hashing, HttpOnly sessions and account security</li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Dashboard with cash flow, budgets, goals and recent activity</li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Transaction ledger with search, filters, bulk actions and CSV export</li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Monthly budgets with category limits, warnings and copy-forward</li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Savings goals with contributions and progress history</li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Reports with charts, category mix, merchants and insights</li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Settings for currency, dates, notifications, categories and backups</li>
-              <li><svg class="icon" aria-hidden="true"><use href="#i-check-circle"></use></svg> Java REST API, SQLite schema, DAO/service layers and session security</li>
-            </ul>
-            <div class="phase-note">
-              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-info"></use></svg>
-              <span>The browser and API share one origin. Auth and finance calls are user-scoped, and the SQLite database lives at <b>backend/data/smartspend.db</b>.</span>
-            </div>
-          </div>
-        </section>
-
         <footer class="app-footer">
           <span>
             <svg class="icon icon--sm" aria-hidden="true"><use href="#i-shield"></use></svg>
-            Full stack complete · vanilla JS, Java 17 and SQLite
+            Secure server-side sessions · HttpOnly cookies
           </span>
           <span>© 2026 SmartSpend</span>
         </footer>

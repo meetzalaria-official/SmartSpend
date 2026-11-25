@@ -174,8 +174,7 @@ public final class Db {
                     created_at          TEXT NOT NULL,
                     updated_at          TEXT NOT NULL,
                     last_login_at       TEXT,
-                    password_changed_at TEXT NOT NULL,
-                    is_demo             INTEGER NOT NULL DEFAULT 0
+                    password_changed_at TEXT NOT NULL
                 )
                 """);
         statements.add("CREATE UNIQUE INDEX IF NOT EXISTS users_username_unique ON users(lower(username))");

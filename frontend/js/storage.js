@@ -1,7 +1,7 @@
 /* ==========================================================================
-   SmartSpend · Offline demo store
+   SmartSpend · Offline store
    Used only when `useMockAuth` / `useMockData` are enabled. The Java + SQLite
-   backend is the default storage for Phase 8. This store also keeps the theme,
+   backend is the default storage in the live app. This store also keeps the theme,
    last identifier and one-shot flash messages for the live app.
    ========================================================================== */
 (function (window) {
@@ -48,7 +48,7 @@
     try {
       window.localStorage.removeItem(key);
     } catch (error) {
-      /* Storage can be unavailable in private modes; the demo still works in-memory. */
+      /* Storage can be unavailable in private modes; the session still works in-memory. */
     }
   }
 

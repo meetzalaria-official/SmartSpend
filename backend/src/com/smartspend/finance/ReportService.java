@@ -285,10 +285,13 @@ public final class ReportService {
             }
 
             String seededAt = Json.text(state, "seededAt", Rows.now());
+            boolean hasCategories = !finance.listCategoriesFor(connection, userId).isEmpty();
             items.add(notification("welcome:" + seededAt, "info", "sparkles",
-                    "Your demo workspace is ready",
-                    "Explore every screen with realistic sample data, or reset it any time in Settings.",
-                    "dashboard.html", seededAt, 5));
+                    "Your workspace is ready",
+                    hasCategories
+                            ? "Review your latest activity or add a new transaction from the dashboard."
+                            : "Add your first category in Settings, then record a transaction to get started.",
+                    hasCategories ? "dashboard.html" : "settings.html#categories", seededAt, 5));
 
             Set<String> read = new HashSet<>(stringList(finance.stateArray(state, "readNotifications")));
             Set<String> dismissed = new HashSet<>(
@@ -451,9 +454,6 @@ public final class ReportService {
                     "This file is not a SmartSpend backup. Choose a JSON backup exported from Settings.",
                     null, "INVALID_BACKUP");
         }
-        if (categories.isEmpty()) {
-            throw ApiException.badRequest("The backup has no categories.", null, "INVALID_BACKUP");
-        }
         List<Map<String, Object>> budgets = source.get("budgets") instanceof List<?> list
                 ? Rows.maps(new ArrayList<Object>(list)) : new ArrayList<>();
         List<Map<String, Object>> goals = source.get("goals") instanceof List<?> list
@@ -501,7 +501,7 @@ public final class ReportService {
                     }
                 }
             }
-            if (categoryIds.isEmpty()) {
+            if (categoryIds.isEmpty() && (!categories.isEmpty() || !transactions.isEmpty())) {
                 throw ApiException.badRequest("The backup has no usable categories.", null, "INVALID_BACKUP");
             }
 
@@ -656,10 +656,6 @@ public final class ReportService {
                     "SELECT COUNT(*) FROM goals WHERE user_id = ?", userId));
             return result;
         });
-    }
-
-    public void resetDemo(String userId) {
-        finance.resetDemo(userId);
     }
 
     /* =====================================================================

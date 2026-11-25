@@ -35,11 +35,9 @@ public final class FinanceService {
     private static final Set<String> THEMES = Set.of("light", "dark", "system");
 
     private final Db db;
-    private final SeedService seed;
 
-    public FinanceService(Db db, SeedService seed) {
+    public FinanceService(Db db) {
         this.db = db;
-        this.seed = seed;
     }
 
     /* =====================================================================
@@ -556,7 +554,7 @@ public final class FinanceService {
             }
             if (Boolean.TRUE.equals(existing.get("system"))) {
                 throw ApiException.badRequest(
-                        "Default categories cannot be deleted. Rename or recolour it instead.",
+                        "This category cannot be deleted. Rename or recolour it instead.",
                         null, "SYSTEM_CATEGORY");
             }
             int usage = count(connection, "SELECT COUNT(*) FROM transactions WHERE user_id = ? AND category_id = ?",
@@ -1301,13 +1299,6 @@ public final class FinanceService {
             return new ArrayList<Object>(list);
         }
         return new ArrayList<>();
-    }
-
-    void resetDemo(String userId) {
-        db.tx(connection -> {
-            seed.resetUser(connection, userId, "");
-            return null;
-        });
     }
 
     /* =====================================================================
