@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f5fb">
+  <meta name="description" content="SmartSpend categories: add, edit and organise the income and expense categories used across transactions, budgets and reports.">
+  <title>Categories · SmartSpend</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("smartspend.theme.v1");
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+      } catch (error) {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/finance.css">
+</head>
+<body class="app-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation"></aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="app-main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content" id="main-content">
+        <section class="page-head">
+          <div class="page-head__copy">
+            <span class="eyebrow"><span class="status-dot"></span> Money</span>
+            <h1>Categories</h1>
+            <p>Add the income and expense categories you use. Categories in use cannot be deleted.</p>
+          </div>
+          <div class="page-head__actions">
+            <button class="btn btn--primary" type="button" id="add-category">
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus"></use></svg>
+              Add category
+            </button>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="categories-title">
+          <div class="card__head">
+            <div class="card__title">
+              <h2 id="categories-title">All categories</h2>
+              <p>These categories power transactions, budgets and reports.</p>
+            </div>
+          </div>
+          <div class="card__body">
+            <div class="category-groups" id="category-groups" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <footer class="app-footer">
+          <span>
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-tag"></use></svg>
+            Categories in use cannot be deleted
+          </span>
+          <span>© 2026 SmartSpend</span>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="modal" id="category-dialog" aria-labelledby="category-dialog-title">
+    <div class="modal__card">
+      <div class="modal__head">
+        <span class="modal__icon">
+          <svg class="icon icon--lg" aria-hidden="true"><use href="#i-tag"></use></svg>
+        </span>
+        <div class="modal__head-text">
+          <h2 id="category-dialog-title">Add category</h2>
+          <p id="category-dialog-subtitle">Give it a name, colour and icon.</p>
+        </div>
+        <button class="btn btn--icon" type="button" data-close-dialog aria-label="Close dialog">
+          <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+        </button>
+      </div>
+
+      <div class="alert" id="category-alert" role="alert" hidden></div>
+
+      <form id="category-form" novalidate>
+        <div class="segmented" role="group" aria-label="Category type">
+          <button class="segmented__button is-active" type="button" data-category-type="expense">
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-up"></use></svg>
+            Expense
+          </button>
+          <button class="segmented__button" type="button" data-category-type="income">
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-down"></use></svg>
+            Income
+          </button>
+        </div>
+
+        <div class="field">
+          <label for="category-name">Category name</label>
+          <div class="input-wrap input-wrap--plain">
+            <input id="category-name" type="text" maxlength="32" placeholder="e.g. Hobbies" required>
+          </div>
+          <p class="field-error" id="category-name-error" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <span class="field__label">Colour</span>
+          <div class="color-field" id="category-colors" role="group" aria-label="Category colour"></div>
+        </div>
+
+        <div class="field">
+          <span class="field__label">Icon</span>
+          <div class="icon-choice" id="category-icons" role="group" aria-label="Category icon"></div>
+        </div>
+
+        <div class="modal__actions">
+          <button class="btn btn--ghost" type="button" data-close-dialog>Cancel</button>
+          <button class="btn btn--primary" type="submit" id="category-save">
+            <span class="btn__label">Save category</span>
+            <span class="btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/crypto.js"></script>
+  <script src="js/validators.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/money.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/dsa.js"></script>
+  <script src="js/finance.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/tx-dialog.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/categories.js"></script>
+</body>
+</html>

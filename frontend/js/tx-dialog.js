@@ -302,7 +302,7 @@
       ui.showAlert(
         elements.alert,
         "info",
-        "Create an income or expense category in Settings → Categories, then add this transaction.",
+        "Create an income or expense category on the Categories page, then add this transaction.",
         "No categories yet"
       );
     }

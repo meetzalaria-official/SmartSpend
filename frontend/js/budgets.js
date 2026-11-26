@@ -411,7 +411,7 @@
       const unbudgeted = data.unbudgeted;
       const pool = unbudgeted.length ? unbudgeted : state.categories;
       if (!pool.length) {
-        ui.toast.info("No expense categories yet", "Create an expense category in Settings first.");
+        ui.toast.info("No expense categories yet", "Create an expense category on the Categories page first.");
         return;
       }
 

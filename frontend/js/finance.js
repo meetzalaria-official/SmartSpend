@@ -305,8 +305,8 @@
       title: "Your workspace is ready",
       message: hasCategories
         ? "Review your latest activity or add a new transaction from the dashboard."
-        : "Add your first category in Settings, then record a transaction to get started.",
-      link: hasCategories ? "dashboard.html" : "settings.html#categories",
+        : "Add your first category, then record a transaction to get started.",
+      link: hasCategories ? "dashboard.html" : "categories.html",
       createdAt: doc.seededAt || doc.state.createdAt || new Date().toISOString(),
       priority: 5,
     });

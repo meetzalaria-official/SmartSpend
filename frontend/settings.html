@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f4f5fb">
-  <meta name="description" content="SmartSpend settings: currency, date format, theme, notifications, categories, CSV export and JSON backup.">
+  <meta name="description" content="SmartSpend settings: currency, date format, theme, notifications, CSV export and JSON backup.">
   <title>Settings · SmartSpend</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <script>
@@ -39,7 +39,7 @@
           <div class="page-head__copy">
             <span class="eyebrow"><span class="status-dot"></span> Workspace</span>
             <h1>Settings</h1>
-            <p>Shape how SmartSpend behaves, manage categories and keep a portable copy of your finance data.</p>
+            <p>Shape how SmartSpend behaves and keep a portable copy of your finance data.</p>
           </div>
           <div class="page-head__actions">
             <a class="btn btn--ghost" href="account.html">
@@ -62,10 +62,6 @@
             <a href="#notifications" data-settings-link>
               <svg class="icon" aria-hidden="true"><use href="#i-bell"></use></svg>
               Notifications
-            </a>
-            <a href="#categories" data-settings-link>
-              <svg class="icon" aria-hidden="true"><use href="#i-tag"></use></svg>
-              Categories
             </a>
             <a href="#data" data-settings-link>
               <svg class="icon" aria-hidden="true"><use href="#i-database"></use></svg>
@@ -219,22 +215,6 @@
               </div>
             </section>
 
-            <section class="card" id="categories" aria-labelledby="categories-title">
-              <div class="card__head">
-                <div class="card__title">
-                  <h2 id="categories-title">Categories</h2>
-                  <p>Add the income and expense categories you use. Categories in use cannot be deleted.</p>
-                </div>
-                <button class="btn btn--ghost btn--sm" type="button" id="add-category">
-                  <svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus"></use></svg>
-                  Add category
-                </button>
-              </div>
-              <div class="card__body">
-                <div class="category-groups" id="category-groups" aria-live="polite"></div>
-              </div>
-            </section>
-
             <section class="card" id="data" aria-labelledby="data-title">
               <div class="card__head">
                 <div class="card__title">
@@ -307,64 +287,6 @@
       </main>
     </div>
   </div>
-
-  <dialog class="modal" id="category-dialog" aria-labelledby="category-dialog-title">
-    <div class="modal__card">
-      <div class="modal__head">
-        <span class="modal__icon">
-          <svg class="icon icon--lg" aria-hidden="true"><use href="#i-tag"></use></svg>
-        </span>
-        <div class="modal__head-text">
-          <h2 id="category-dialog-title">Add category</h2>
-          <p id="category-dialog-subtitle">Give it a name, colour and icon.</p>
-        </div>
-        <button class="btn btn--icon" type="button" data-close-dialog aria-label="Close dialog">
-          <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
-        </button>
-      </div>
-
-      <div class="alert" id="category-alert" role="alert" hidden></div>
-
-      <form id="category-form" novalidate>
-        <div class="segmented" role="group" aria-label="Category type">
-          <button class="segmented__button is-active" type="button" data-category-type="expense">
-            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-up"></use></svg>
-            Expense
-          </button>
-          <button class="segmented__button" type="button" data-category-type="income">
-            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-arrow-down"></use></svg>
-            Income
-          </button>
-        </div>
-
-        <div class="field">
-          <label for="category-name">Category name</label>
-          <div class="input-wrap input-wrap--plain">
-            <input id="category-name" type="text" maxlength="32" placeholder="e.g. Hobbies" required>
-          </div>
-          <p class="field-error" id="category-name-error" role="alert"></p>
-        </div>
-
-        <div class="field">
-          <span class="field__label">Colour</span>
-          <div class="color-field" id="category-colors" role="group" aria-label="Category colour"></div>
-        </div>
-
-        <div class="field">
-          <span class="field__label">Icon</span>
-          <div class="icon-choice" id="category-icons" role="group" aria-label="Category icon"></div>
-        </div>
-
-        <div class="modal__actions">
-          <button class="btn btn--ghost" type="button" data-close-dialog>Cancel</button>
-          <button class="btn btn--primary" type="submit" id="category-save">
-            <span class="btn__label">Save category</span>
-            <span class="btn__spinner" aria-hidden="true"></span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </dialog>
 
   <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="false"></div>
 

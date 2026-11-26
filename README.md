@@ -220,8 +220,9 @@ smartSpend/
 │   ├── transactions.html       Transaction ledger
 │   ├── budgets.html            Monthly and category budgets
 │   ├── goals.html              Savings goals
+│   ├── categories.html         Income and expense categories
 │   ├── reports.html            Reports and analytics
-│   ├── settings.html           Preferences, categories and backup
+│   ├── settings.html           Preferences, notifications and backup
 │   ├── assets/                 favicon.svg, logo.svg
 │   ├── css/                    base.css, auth.css, app.css, finance.css
 │   └── js/

@@ -19,6 +19,7 @@
         { id: "transactions", label: "Transactions", href: "transactions.html", icon: "wallet" },
         { id: "budgets", label: "Budgets", href: "budgets.html", icon: "target" },
         { id: "goals", label: "Savings goals", href: "goals.html", icon: "piggy-bank" },
+        { id: "categories", label: "Categories", href: "categories.html", icon: "tag" },
         { id: "reports", label: "Reports", href: "reports.html", icon: "pie" },
       ],
     },

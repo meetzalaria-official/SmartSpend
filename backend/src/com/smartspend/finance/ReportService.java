@@ -290,8 +290,8 @@ public final class ReportService {
                     "Your workspace is ready",
                     hasCategories
                             ? "Review your latest activity or add a new transaction from the dashboard."
-                            : "Add your first category in Settings, then record a transaction to get started.",
-                    hasCategories ? "dashboard.html" : "settings.html#categories", seededAt, 5));
+                            : "Add your first category, then record a transaction to get started.",
+                    hasCategories ? "dashboard.html" : "categories.html", seededAt, 5));
 
             Set<String> read = new HashSet<>(stringList(finance.stateArray(state, "readNotifications")));
             Set<String> dismissed = new HashSet<>(
