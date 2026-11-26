@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f5fb">
+  <title>SmartSpend</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script>
+    (function () {
+      function localSession() {
+        try {
+          var session = JSON.parse(window.localStorage.getItem("smartspend.session.v1") || "null");
+          if (!session) {
+            session = JSON.parse(window.sessionStorage.getItem("smartspend.session.v1") || "null");
+          }
+          return session;
+        } catch (error) {
+          return null;
+        }
+      }
+
+      /*
+       * The Java server keeps the real session in an HttpOnly cookie, so ask it
+       * first. The local-storage check keeps the offline browser adapter working
+       * when useMockAuth is switched on and no backend is running.
+       */
+      fetch("/api/auth/session", {
+        credentials: "same-origin",
+        headers: { Accept: "application/json" }
+      })
+        .then(function (response) {
+          if (!response.ok) throw new Error("No API");
+          return response.json();
+        })
+        .then(function (data) {
+          window.location.replace(data && data.session ? "dashboard.html" : "login.html");
+        })
+        .catch(function () {
+          var session = localSession();
+          var valid = Boolean(
+            session && session.expiresAt && new Date(session.expiresAt).getTime() > Date.now()
+          );
+          window.location.replace(valid ? "dashboard.html" : "login.html");
+        });
+    })();
+  </script>
+</head>
+<body>
+  <p style="font-family: Segoe UI, system-ui, sans-serif; padding: 2rem; color: #344054;">
+    Opening SmartSpend… <a href="login.html">Continue to sign in</a>.
+  </p>
+</body>
+</html>

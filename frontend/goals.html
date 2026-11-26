@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f5fb">
+  <meta name="description" content="SmartSpend savings goals: targets, deadlines, monthly amounts needed and contribution history.">
+  <title>Savings goals · SmartSpend</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("smartspend.theme.v1");
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+      } catch (error) {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/finance.css">
+</head>
+<body class="app-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation"></aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="app-main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content" id="main-content">
+        <section class="page-head">
+          <div class="page-head__copy">
+            <span class="eyebrow"><span class="status-dot"></span> Savings</span>
+            <h1>Savings goals</h1>
+            <p>Give every target a deadline, watch the progress build and know exactly how much to set aside each month.</p>
+          </div>
+          <div class="page-head__actions">
+            <button class="btn btn--primary" type="button" id="add-goal">
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus"></use></svg>
+              New goal
+            </button>
+          </div>
+        </section>
+
+        <section class="summary-grid" id="goal-summary" aria-label="Goal summary"></section>
+
+        <section aria-label="Your savings goals">
+          <div id="goal-grid" class="goal-grid" aria-live="polite"></div>
+        </section>
+
+        <footer class="app-footer">
+          <span>
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-piggy-bank"></use></svg>
+            Monthly amount recalculated from the remaining balance and deadline
+          </span>
+          <span>© 2026 SmartSpend</span>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="modal modal--wide" id="goal-dialog" aria-labelledby="goal-dialog-title">
+    <div class="modal__card">
+      <div class="modal__head">
+        <span class="modal__icon">
+          <svg class="icon icon--lg" aria-hidden="true"><use href="#i-piggy-bank"></use></svg>
+        </span>
+        <div class="modal__head-text">
+          <h2 id="goal-dialog-title">New savings goal</h2>
+          <p id="goal-dialog-subtitle">Define a target and a realistic deadline.</p>
+        </div>
+        <button class="btn btn--icon" type="button" data-close-dialog aria-label="Close dialog">
+          <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+        </button>
+      </div>
+
+      <div class="alert" id="goal-alert" role="alert" hidden></div>
+
+      <form id="goal-form" novalidate>
+        <div class="form-grid form-grid--2">
+          <div class="field">
+            <label for="goal-name">Goal name</label>
+            <div class="input-wrap input-wrap--plain">
+              <input id="goal-name" type="text" maxlength="42" placeholder="e.g. Emergency fund" required>
+            </div>
+            <p class="field-error" id="goal-name-error" role="alert"></p>
+          </div>
+
+          <div class="field">
+            <label for="goal-deadline">Target date</label>
+            <div class="input-wrap input-wrap--plain">
+              <input id="goal-deadline" type="date" required>
+            </div>
+            <p class="field-error" id="goal-deadline-error" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="form-grid form-grid--2">
+          <div class="field">
+            <label for="goal-target">Target amount</label>
+            <div class="input-wrap input-wrap--plain amount-input">
+              <span class="amount-input__symbol" id="goal-currency"></span>
+              <input id="goal-target" type="number" inputmode="decimal" min="1" step="1" placeholder="0" required>
+            </div>
+            <p class="field-error" id="goal-target-error" role="alert"></p>
+          </div>
+
+          <div class="field" id="goal-saved-field">
+            <label for="goal-saved">Already saved <span class="label-optional">optional</span></label>
+            <div class="input-wrap input-wrap--plain amount-input">
+              <span class="amount-input__symbol" id="goal-saved-currency"></span>
+              <input id="goal-saved" type="number" inputmode="decimal" min="0" step="1" placeholder="0">
+            </div>
+            <p class="field-error" id="goal-saved-error" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="goal-note">Note <span class="label-optional">optional</span></label>
+          <div class="input-wrap input-wrap--plain">
+            <input id="goal-note" type="text" maxlength="200" placeholder="What is this goal for?">
+          </div>
+        </div>
+
+        <div class="form-grid form-grid--2" style="margin-top:1rem">
+          <div class="field">
+            <span class="field__label">Colour</span>
+            <div class="color-field" id="goal-colors" role="group" aria-label="Goal colour"></div>
+          </div>
+          <div class="field">
+            <span class="field__label">Icon</span>
+            <div class="icon-choice" id="goal-icons" role="group" aria-label="Goal icon"></div>
+          </div>
+        </div>
+
+        <div class="modal__actions">
+          <button class="btn btn--ghost" type="button" data-close-dialog>Cancel</button>
+          <button class="btn btn--primary" type="submit" id="goal-save">
+            <span class="btn__label">Save goal</span>
+            <span class="btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="contribution-dialog" aria-labelledby="contribution-title">
+    <div class="modal__card">
+      <div class="modal__head">
+        <span class="modal__icon">
+          <svg class="icon icon--lg" aria-hidden="true"><use href="#i-wallet"></use></svg>
+        </span>
+        <div class="modal__head-text">
+          <h2 id="contribution-title">Add to goal</h2>
+          <p id="contribution-subtitle">Record a contribution towards this target.</p>
+        </div>
+        <button class="btn btn--icon" type="button" data-close-dialog aria-label="Close dialog">
+          <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+        </button>
+      </div>
+
+      <div class="alert" id="contribution-alert" role="alert" hidden></div>
+
+      <form id="contribution-form" novalidate>
+        <div class="field">
+          <label for="contribution-amount">Contribution amount</label>
+          <div class="input-wrap input-wrap--plain amount-input">
+            <span class="amount-input__symbol" id="contribution-currency"></span>
+            <input id="contribution-amount" type="number" inputmode="decimal" min="1" step="1" placeholder="0" required>
+          </div>
+          <p class="field-error" id="contribution-amount-error" role="alert"></p>
+        </div>
+
+        <div class="form-grid form-grid--2">
+          <div class="field">
+            <label for="contribution-date">Date</label>
+            <div class="input-wrap input-wrap--plain">
+              <input id="contribution-date" type="date">
+            </div>
+          </div>
+          <div class="field">
+            <label for="contribution-note">Note <span class="label-optional">optional</span></label>
+            <div class="input-wrap input-wrap--plain">
+              <input id="contribution-note" type="text" maxlength="120" placeholder="Monthly transfer">
+            </div>
+          </div>
+        </div>
+
+        <div class="modal__actions">
+          <button class="btn btn--ghost" type="button" data-close-dialog>Cancel</button>
+          <button class="btn btn--primary" type="submit" id="contribution-save">
+            <span class="btn__label">Add contribution</span>
+            <span class="btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/crypto.js"></script>
+  <script src="js/validators.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/money.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/dsa.js"></script>
+  <script src="js/finance.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/tx-dialog.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/goals.js"></script>
+</body>
+</html>

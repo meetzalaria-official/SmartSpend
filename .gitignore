@@ -1,0 +1,13 @@
+# Build output
+backend/bin/
+
+# Local data (Phase 2+)
+data/
+*.db
+*.db-wal
+*.db-shm
+
+# Logs and editor noise
+*.log
+.DS_Store
+Thumbs.db

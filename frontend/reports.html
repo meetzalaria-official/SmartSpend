@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f5fb">
+  <meta name="description" content="SmartSpend reports and analytics: income and expense trends, category breakdown, top merchants, averages and export.">
+  <title>Reports · SmartSpend</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("smartspend.theme.v1");
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+      } catch (error) {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/finance.css">
+</head>
+<body class="app-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation"></aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="app-main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content" id="main-content">
+        <section class="page-head">
+          <div class="page-head__copy">
+            <span class="eyebrow"><span class="status-dot"></span> Analytics</span>
+            <h1>Reports</h1>
+            <p>Understand where the money goes, how each month compares and which habits are worth changing.</p>
+          </div>
+          <div class="page-head__actions">
+            <label class="inline-field">
+              <span>Period</span>
+              <select id="report-period">
+                <option value="this-month">This month</option>
+                <option value="last-month">Last month</option>
+                <option value="last-3">Last 3 months</option>
+                <option value="last-6">Last 6 months</option>
+                <option value="this-year">This year</option>
+                <option value="custom">Custom range</option>
+              </select>
+            </label>
+            <div class="toolbar__row toolbar__row--custom" id="report-custom" hidden>
+              <label class="inline-field">
+                <span>From</span>
+                <input type="date" id="report-from">
+              </label>
+              <label class="inline-field">
+                <span>To</span>
+                <input type="date" id="report-to">
+              </label>
+            </div>
+            <button class="btn btn--ghost" type="button" id="report-export">
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-download"></use></svg>
+              Export CSV
+            </button>
+            <button class="btn btn--ghost" type="button" id="report-print">
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-printer"></use></svg>
+              Print
+            </button>
+          </div>
+        </section>
+
+        <section class="summary-grid" id="report-summary" aria-label="Report summary"></section>
+
+        <div class="dash-grid">
+          <section class="card chart-card" aria-labelledby="report-trend-title">
+            <div class="card__head">
+              <div class="card__title">
+                <h2 id="report-trend-title">Income and expenses</h2>
+                <p>Monthly cash flow over the last six months.</p>
+              </div>
+              <span class="chip chip--primary">6 months</span>
+            </div>
+            <div class="card__body">
+              <div id="report-trend" class="chart-slot" aria-live="polite"></div>
+            </div>
+          </section>
+
+          <section class="card chart-card" aria-labelledby="report-donut-title">
+            <div class="card__head">
+              <div class="card__title">
+                <h2 id="report-donut-title">Category mix</h2>
+                <p>Where expenses went in the selected period.</p>
+              </div>
+            </div>
+            <div class="card__body">
+              <div id="report-donut" class="chart-slot" aria-live="polite"></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="card chart-card" aria-labelledby="report-bars-title">
+          <div class="card__head">
+            <div class="card__title">
+              <h2 id="report-bars-title">Monthly comparison</h2>
+              <p>Income next to expenses for each month in the trend window.</p>
+            </div>
+          </div>
+          <div class="card__body">
+            <div id="report-bars" class="chart-slot" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <div class="report-grid">
+          <section class="card" aria-labelledby="report-categories-title">
+            <div class="card__head">
+              <div class="card__title">
+                <h2 id="report-categories-title">Category breakdown</h2>
+                <p>Every expense category, largest first.</p>
+              </div>
+            </div>
+            <div class="card__body">
+              <div id="report-categories" class="breakdown-list" aria-live="polite"></div>
+            </div>
+          </section>
+
+          <section class="card" aria-labelledby="report-merchants-title">
+            <div class="card__head">
+              <div class="card__title">
+                <h2 id="report-merchants-title">Top merchants</h2>
+                <p>Where the largest share of spending went.</p>
+              </div>
+            </div>
+            <div class="card__body">
+              <div id="report-merchants" class="rank-list" aria-live="polite"></div>
+              <div class="report-facts" id="report-facts" style="margin-top:1rem"></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="card" aria-labelledby="report-insights-title">
+          <div class="card__head">
+            <div class="card__title">
+              <h2 id="report-insights-title">What the numbers say</h2>
+              <p>Automatic observations for the selected period.</p>
+            </div>
+            <span class="chip"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-sparkles"></use></svg> Auto-generated</span>
+          </div>
+          <div class="card__body">
+            <ul class="insight-list" id="report-insights"></ul>
+          </div>
+        </section>
+
+        <footer class="app-footer">
+          <span>
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-chart"></use></svg>
+            Merge-sorted rankings and tree-grouped categories (DSA module)
+          </span>
+          <span>© 2026 SmartSpend</span>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/crypto.js"></script>
+  <script src="js/validators.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/money.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/dsa.js"></script>
+  <script src="js/finance.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/tx-dialog.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/reports.js"></script>
+</body>
+</html>
