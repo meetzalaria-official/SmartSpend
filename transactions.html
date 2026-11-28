@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f5fb">
+  <meta name="description" content="SmartSpend transaction ledger: search, filter, sort, add, edit, delete and export every income and expense.">
+  <title>Transactions · SmartSpend</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("smartspend.theme.v1");
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+      } catch (error) {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/finance.css">
+</head>
+<body class="app-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation"></aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="app-main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content" id="main-content">
+        <section class="page-head">
+          <div class="page-head__copy">
+            <span class="eyebrow"><span class="status-dot"></span> Ledger</span>
+            <h1>Transactions</h1>
+            <p>Search, filter and manage every rupee that moves through your account.</p>
+          </div>
+          <div class="page-head__actions">
+            <button class="btn btn--ghost" type="button" id="export-csv">
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-download"></use></svg>
+              Export CSV
+            </button>
+            <button class="btn btn--primary" type="button" data-quick-add>
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus"></use></svg>
+              Add transaction
+            </button>
+          </div>
+        </section>
+
+        <section class="summary-grid" id="tx-summary" aria-label="Filtered totals"></section>
+
+        <section class="card">
+          <div class="toolbar">
+            <div class="toolbar__row">
+              <div class="search-field">
+                <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+                <input type="search" id="tx-search" placeholder="Search merchant, note or method" aria-label="Search transactions" autocomplete="off">
+              </div>
+
+              <label class="inline-field">
+                <span class="visually-hidden">Transaction type</span>
+                <select id="tx-type">
+                  <option value="all">All types</option>
+                  <option value="expense">Expenses</option>
+                  <option value="income">Income</option>
+                </select>
+              </label>
+
+              <label class="inline-field">
+                <span class="visually-hidden">Category</span>
+                <select id="tx-category"></select>
+              </label>
+
+              <label class="inline-field">
+                <span class="visually-hidden">Period</span>
+                <select id="tx-period">
+                  <option value="all">All time</option>
+                  <option value="this-month">This month</option>
+                  <option value="last-month">Last month</option>
+                  <option value="last-3">Last 3 months</option>
+                  <option value="this-year">This year</option>
+                  <option value="custom">Custom range</option>
+                </select>
+              </label>
+
+              <label class="inline-field">
+                <span class="visually-hidden">Sort order</span>
+                <select id="tx-sort">
+                  <option value="date-desc">Newest first</option>
+                  <option value="date-asc">Oldest first</option>
+                  <option value="amount-desc">Highest amount</option>
+                  <option value="amount-asc">Lowest amount</option>
+                  <option value="description">Description A–Z</option>
+                </select>
+              </label>
+
+              <button class="btn btn--ghost btn--sm toolbar__reset" type="button" id="reset-filters">
+                <svg class="icon icon--sm" aria-hidden="true"><use href="#i-refresh"></use></svg>
+                Reset
+              </button>
+            </div>
+
+            <div class="toolbar__row toolbar__row--custom" id="custom-range" hidden>
+              <label class="inline-field">
+                <span>From</span>
+                <input type="date" id="tx-from">
+              </label>
+              <label class="inline-field">
+                <span>To</span>
+                <input type="date" id="tx-to">
+              </label>
+            </div>
+
+            <div class="bulk-bar" id="bulk-bar" hidden>
+              <span><strong id="bulk-count">0</strong> selected</span>
+              <div class="bulk-bar__actions">
+                <button class="btn btn--ghost btn--sm" type="button" id="bulk-clear">Clear</button>
+                <button class="btn btn--danger-ghost btn--sm" type="button" id="bulk-delete">
+                  <svg class="icon icon--sm" aria-hidden="true"><use href="#i-trash"></use></svg>
+                  Delete selected
+                </button>
+              </div>
+            </div>
+
+            <div class="smart-bar" id="smart-bar" hidden></div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table tx-table" aria-label="Transactions">
+              <thead>
+                <tr>
+                  <th class="tx-cell--check">
+                    <label class="check-only">
+                      <input type="checkbox" id="select-all" aria-label="Select all transactions on this page">
+                      <span class="check-only__box"><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg></span>
+                    </label>
+                  </th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Type</th>
+                  <th scope="col" class="tx-cell--amount">Amount</th>
+                  <th scope="col" class="tx-cell--actions"><span class="visually-hidden">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody id="tx-body"></tbody>
+            </table>
+            <div id="tx-empty" class="empty-state" hidden>
+              <span class="empty-state__icon"><svg class="icon icon--xl" aria-hidden="true"><use href="#i-receipt"></use></svg></span>
+              <strong>No transactions match these filters</strong>
+              <p>Try a wider date range, a different category or clear the search.</p>
+              <button class="btn btn--ghost" type="button" id="empty-reset">Clear filters</button>
+            </div>
+          </div>
+
+          <div class="pagination" id="pagination"></div>
+        </section>
+
+        <footer class="app-footer">
+          <span>
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-database"></use></svg>
+            Undo stack and merge-sort search powered by the DSA module
+          </span>
+          <span>© 2026 SmartSpend</span>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/crypto.js"></script>
+  <script src="js/validators.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/money.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/dsa.js"></script>
+  <script src="js/finance.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/tx-dialog.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/transactions.js"></script>
+</body>
+</html>
