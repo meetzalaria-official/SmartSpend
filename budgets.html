@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f5fb">
+  <meta name="description" content="SmartSpend monthly budgets: set an overall limit, track category limits, copy last month and watch spending warnings.">
+  <title>Budgets · SmartSpend</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <script>
+    (function () {
+      try {
+        var theme = localStorage.getItem("smartspend.theme.v1");
+        if (theme !== "dark" && theme !== "light") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.dataset.theme = theme;
+      } catch (error) {
+        document.documentElement.dataset.theme = "light";
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/finance.css">
+</head>
+<body class="app-page">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation"></aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div class="app-main">
+      <header class="topbar" id="topbar"></header>
+
+      <main class="content" id="main-content">
+        <section class="page-head">
+          <div class="page-head__copy">
+            <span class="eyebrow"><span class="status-dot"></span> Planning</span>
+            <h1>Monthly budgets</h1>
+            <p>Set an overall spending limit, give each category a ceiling and catch overspending before it happens.</p>
+          </div>
+          <div class="page-head__actions">
+            <div class="month-switcher" role="group" aria-label="Change budget month">
+              <button class="btn btn--icon" type="button" id="month-prev" aria-label="Previous month">
+                <svg class="icon" aria-hidden="true"><use href="#i-chevron-left"></use></svg>
+              </button>
+              <span class="month-switcher__label" id="month-label">This month</span>
+              <button class="btn btn--icon" type="button" id="month-next" aria-label="Next month">
+                <svg class="icon" aria-hidden="true"><use href="#i-chevron-right"></use></svg>
+              </button>
+            </div>
+            <button class="btn btn--ghost" type="button" id="copy-previous">
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-copy"></use></svg>
+              Copy last month
+            </button>
+            <button class="btn btn--primary" type="button" id="add-budget">
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus"></use></svg>
+              Add category budget
+            </button>
+          </div>
+        </section>
+
+        <section class="summary-grid" id="budget-summary" aria-label="Budget summary"></section>
+
+        <div class="budget-layout">
+          <section class="card" aria-labelledby="overall-title">
+            <div class="card__head">
+              <div class="card__title">
+                <h2 id="overall-title">Overall monthly budget</h2>
+                <p>One limit across every expense category.</p>
+              </div>
+              <span class="chip" id="overall-status">Not set</span>
+            </div>
+            <div class="card__body" id="overall-panel"></div>
+          </section>
+
+          <section class="card" aria-labelledby="allocation-title">
+            <div class="card__head">
+              <div class="card__title">
+                <h2 id="allocation-title">Category allocation</h2>
+                <p>How your category limits divide the overall plan.</p>
+              </div>
+              <span class="chip chip--primary">Limits</span>
+            </div>
+            <div class="card__body">
+              <div id="budget-chart" class="chart-slot" aria-live="polite"></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="card" aria-labelledby="category-budgets-title">
+          <div class="card__head">
+            <div class="card__title">
+              <h2 id="category-budgets-title">Category budgets</h2>
+              <p>Adjust a limit inline and save. Warnings start at 80% of the limit.</p>
+            </div>
+            <button class="btn btn--ghost btn--sm" type="button" id="add-budget-inline">
+              <svg class="icon icon--sm" aria-hidden="true"><use href="#i-plus"></use></svg>
+              Add
+            </button>
+          </div>
+          <div class="card__body">
+            <div id="budget-list" class="budget-list" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="unbudgeted-title">
+          <div class="card__head">
+            <div class="card__title">
+              <h2 id="unbudgeted-title">Not budgeted yet</h2>
+              <p>Categories with spending but no limit for this month.</p>
+            </div>
+          </div>
+          <div class="card__body">
+            <div id="unbudgeted-list" class="unbudgeted-list" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <footer class="app-footer">
+          <span>
+            <svg class="icon icon--sm" aria-hidden="true"><use href="#i-target"></use></svg>
+            Warnings at 80% · over-budget alerts in the notification bell
+          </span>
+          <span>© 2026 SmartSpend</span>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="modal" id="budget-dialog" aria-labelledby="budget-dialog-title">
+    <div class="modal__card">
+      <div class="modal__head">
+        <span class="modal__icon">
+          <svg class="icon icon--lg" aria-hidden="true"><use href="#i-target"></use></svg>
+        </span>
+        <div class="modal__head-text">
+          <h2 id="budget-dialog-title">Add a category budget</h2>
+          <p>Give one expense category a monthly limit.</p>
+        </div>
+        <button class="btn btn--icon" type="button" data-close-dialog aria-label="Close dialog">
+          <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+        </button>
+      </div>
+
+      <div class="alert" id="budget-alert" role="alert" hidden></div>
+
+      <form id="budget-form" novalidate>
+        <div class="field">
+          <label for="budget-category">Category</label>
+          <div class="input-wrap input-wrap--plain select-wrap">
+            <select id="budget-category"></select>
+          </div>
+          <p class="field-error" id="budget-category-error" role="alert"></p>
+        </div>
+
+        <div class="field">
+          <label for="budget-amount">Monthly limit</label>
+          <div class="input-wrap input-wrap--plain amount-input">
+            <span class="amount-input__symbol" id="budget-currency"></span>
+            <input id="budget-amount" type="number" inputmode="decimal" min="0" step="1" placeholder="0" required>
+          </div>
+          <p class="field-error" id="budget-amount-error" role="alert"></p>
+        </div>
+
+        <div class="modal__actions">
+          <button class="btn btn--ghost" type="button" data-close-dialog>Cancel</button>
+          <button class="btn btn--primary" type="submit" id="budget-save">
+            <span class="btn__label">Save budget</span>
+            <span class="btn__spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/icons.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/crypto.js"></script>
+  <script src="js/validators.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/money.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/dsa.js"></script>
+  <script src="js/finance.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/tx-dialog.js"></script>
+  <script src="js/shell.js"></script>
+  <script src="js/budgets.js"></script>
+</body>
+</html>
